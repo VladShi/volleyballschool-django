@@ -1,0 +1,328 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link type="text/css" rel="stylesheet" href="{% static 'volleyballschool/css/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Школа Волейбола</title>
+</head>
+
+<body>
+
+    <!-- Sprite -->
+    <svg style="display: none;">
+
+        <symbol id="telegram" viewBox="0 0 511.999 511.999">
+            <g>
+                <path style="fill:#C3C3C7;" d="M165.323,267.452L395.89,125.446c4.144-2.545,8.407,3.058,4.849,6.359L210.454,308.684
+            c-6.688,6.226-11.003,14.558-12.225,23.602l-6.482,48.036c-0.858,6.414-9.868,7.05-11.638,0.843l-24.929-87.595
+            C152.325,283.578,156.486,272.907,165.323,267.452z" />
+                <path style="fill:#DEDEE0;" d="M9.043,246.86l117.975,44.032l45.664,146.854c2.922,9.405,14.423,12.882,22.057,6.641l65.761-53.61
+            c6.893-5.617,16.712-5.897,23.916-0.667l118.61,86.113c8.166,5.936,19.736,1.461,21.784-8.407l86.888-417.947
+            c2.236-10.779-8.356-19.772-18.62-15.802L8.905,220.845C-3.043,225.453-2.939,242.369,9.043,246.86z M165.323,267.452
+            L395.89,125.446c4.144-2.545,8.407,3.058,4.849,6.359L210.454,308.684c-6.688,6.226-11.003,14.558-12.225,23.602l-6.482,48.036
+            c-0.858,6.414-9.868,7.05-11.638,0.843l-24.929-87.595C152.325,283.578,156.486,272.907,165.323,267.452z" />
+            </g>
+        </symbol>
+
+        <symbol id="instagram" viewBox="0 0 24 24">
+            <g>
+                <path
+                    d="m12.004 5.838c-3.403 0-6.158 2.758-6.158 6.158 0 3.403 2.758 6.158 6.158 6.158 3.403 0 6.158-2.758 6.158-6.158 0-3.403-2.758-6.158-6.158-6.158zm0 10.155c-2.209 0-3.997-1.789-3.997-3.997s1.789-3.997 3.997-3.997 3.997 1.789 3.997 3.997c.001 2.208-1.788 3.997-3.997 3.997z" />
+                <path
+                    d="m16.948.076c-2.208-.103-7.677-.098-9.887 0-1.942.091-3.655.56-5.036 1.941-2.308 2.308-2.013 5.418-2.013 9.979 0 4.668-.26 7.706 2.013 9.979 2.317 2.316 5.472 2.013 9.979 2.013 4.624 0 6.22.003 7.855-.63 2.223-.863 3.901-2.85 4.065-6.419.104-2.209.098-7.677 0-9.887-.198-4.213-2.459-6.768-6.976-6.976zm3.495 20.372c-1.513 1.513-3.612 1.378-8.468 1.378-5 0-7.005.074-8.468-1.393-1.685-1.677-1.38-4.37-1.38-8.453 0-5.525-.567-9.504 4.978-9.788 1.274-.045 1.649-.06 4.856-.06l.045.03c5.329 0 9.51-.558 9.761 4.986.057 1.265.07 1.645.07 4.847-.001 4.942.093 6.959-1.394 8.453z" />
+                <circle cx="18.406" cy="5.595" r="1.439" />
+            </g>
+        </symbol>
+
+        <symbol id="youtube" viewBox="0 0 512 512">
+            <g>
+                <path d="M490.24,113.92c-13.888-24.704-28.96-29.248-59.648-30.976C399.936,80.864,322.848,80,256.064,80
+                c-66.912,0-144.032,0.864-174.656,2.912c-30.624,1.76-45.728,6.272-59.744,31.008C7.36,138.592,0,181.088,0,255.904
+                C0,255.968,0,256,0,256c0,0.064,0,0.096,0,0.096v0.064c0,74.496,7.36,117.312,21.664,141.728
+                c14.016,24.704,29.088,29.184,59.712,31.264C112.032,430.944,189.152,432,256.064,432c66.784,0,143.872-1.056,174.56-2.816
+                c30.688-2.08,45.76-6.56,59.648-31.264C504.704,373.504,512,330.688,512,256.192c0,0,0-0.096,0-0.16c0,0,0-0.064,0-0.096
+                C512,181.088,504.704,138.592,490.24,113.92z M192,352V160l160,96L192,352z" />
+            </g>
+        </symbol>
+
+        <symbol id="vkontakte" viewBox="0 0 96.496 96.496">
+            <g>
+                <path d="M92.499,65.178c-2.873-3.446-6.254-6.387-9.453-9.51c-2.886-2.815-3.068-4.448-0.748-7.697
+                c2.532-3.546,5.255-6.956,7.81-10.486c2.385-3.299,4.823-6.589,6.078-10.539c0.796-2.513,0.092-3.623-2.485-4.063
+                c-0.444-0.077-0.903-0.081-1.355-0.081l-15.289-0.018c-1.883-0.028-2.924,0.793-3.59,2.462c-0.899,2.256-1.826,4.51-2.897,6.687
+                c-2.43,4.936-5.144,9.707-8.949,13.747c-0.839,0.891-1.767,2.017-3.169,1.553c-1.754-0.64-2.271-3.53-2.242-4.507l-0.015-17.647
+                c-0.34-2.521-0.899-3.645-3.402-4.135l-15.882,0.003c-2.12,0-3.183,0.819-4.315,2.145c-0.653,0.766-0.85,1.263,0.492,1.517
+                c2.636,0.5,4.121,2.206,4.515,4.849c0.632,4.223,0.588,8.463,0.224,12.703c-0.107,1.238-0.32,2.473-0.811,3.629
+                c-0.768,1.817-2.008,2.187-3.637,1.069c-1.475-1.012-2.511-2.44-3.525-3.874c-3.809-5.382-6.848-11.186-9.326-17.285
+                c-0.716-1.762-1.951-2.83-3.818-2.859c-4.587-0.073-9.175-0.085-13.762,0.004c-2.76,0.052-3.583,1.392-2.459,3.894
+                c4.996,11.113,10.557,21.917,17.816,31.759c3.727,5.051,8.006,9.51,13.534,12.67c6.265,3.582,13.009,4.66,20.112,4.328
+                c3.326-0.156,4.325-1.021,4.479-4.336c0.104-2.268,0.361-4.523,1.48-6.561c1.098-2,2.761-2.381,4.678-1.137
+                c0.959,0.623,1.767,1.416,2.53,2.252c1.872,2.048,3.677,4.158,5.62,6.137c2.437,2.48,5.324,3.945,8.954,3.646L93.744,75.5
+                c2.264-0.148,3.438-2.924,2.138-5.451C94.969,68.279,93.771,66.703,92.499,65.178z" />
+            </g>
+        </symbol>
+
+        <symbol id="facebook" viewBox="0 0 96.124 96.123">
+            <g>
+                <path
+                    d="M72.089,0.02L59.624,0C45.62,0,36.57,9.285,36.57,23.656v10.907H24.037c-1.083,0-1.96,0.878-1.96,1.961v15.803
+                c0,1.083,0.878,1.96,1.96,1.96h12.533v39.876c0,1.083,0.877,1.96,1.96,1.96h16.352c1.083,0,1.96-0.878,1.96-1.96V54.287h14.654
+                c1.083,0,1.96-0.877,1.96-1.96l0.006-15.803c0-0.52-0.207-1.018-0.574-1.386c-0.367-0.368-0.867-0.575-1.387-0.575H56.842v-9.246
+                c0-4.444,1.059-6.7,6.848-6.7l8.397-0.003c1.082,0,1.959-0.878,1.959-1.96V1.98C74.046,0.899,73.17,0.022,72.089,0.02z" />
+            </g>
+        </symbol>
+
+        <symbol id="usericon" viewBox="0 0 415.744 415.744">
+            <g>
+                <path
+                    d="M207.872,0c-53.76,0-97.28,43.52-97.28,97.28s43.52,97.28,97.28,97.28s97.28-43.52,97.28-97.28S261.632,0,207.872,0z" />
+                <path d="M245.76,205.824h-75.776c-76.288,0-138.24,61.952-138.24,138.24v56.32c0,8.704,6.656,15.36,15.36,15.36H368.64
+			c8.704,0,15.36-6.656,15.36-15.36v-56.32C384,267.776,322.048,205.824,245.76,205.824z" />
+            </g>
+        </symbol>
+
+    </svg>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <span>+7 (999) 999-99-99</span>
+
+                <div class="social">
+                    <a class="social__link" href="#">
+                        <svg class="social__icon">
+                            <use xlink:href="#telegram"></use>
+                        </svg>
+                    </a>
+                    <a class="social__link" href="#">
+                        <svg class="social__icon">
+                            <use xlink:href="#instagram"></use>
+                        </svg>
+                    </a>
+                    <a class="social__link" href="#">
+                        <svg class="social__icon">
+                            <use xlink:href="#youtube"></use>
+                        </svg>
+                    </a>
+                    <a class="social__link" href="#">
+                        <svg class="social__icon">
+                            <use xlink:href="#vkontakte"></use>
+                        </svg>
+                    </a>
+                    <a class="social__link" href="#">
+                        <svg class="social__icon">
+                            <use xlink:href="#facebook"></use>
+                        </svg>
+                    </a>
+                    <a class="social__link" href="account.html">
+                        <svg class="social__icon">
+                            <use xlink:href="#usericon"></use>
+                        </svg>
+                        <span class="social__link_login">Личный кабинет</span>
+                    </a>
+                </div>
+
+            </div><!-- /.header__inner -->
+        </div><!-- /.container -->
+    </header>
+
+    <!-- Main menu -->
+    <div class="mainmenu">
+        <div class="container">
+            <div class="mainmenu__inner">
+
+                <div class="mainmenu__logo">
+                    <a style="text-decoration: none;" href="{% url 'index_page' %}"><span
+                            style="color:crimson;">Volleyball</span><span style="color:mediumblue;">School</span></a>
+                </div>
+
+                <nav class="nav">
+                    <a class="nav__link" href="timetable.html">Расписание</a>
+                    <a class="nav__link" href="prices.html">Цены</a>
+                    <a class="nav__link" href="courts.html">Залы</a>
+                    <a class="nav__link" href="coaches.html">Tренеры</a>
+                    <a class="nav__link" href="articles.html">Статьи</a>
+                    <a class="nav__link" href="news.html">Новости</a>
+                </nav>
+
+            </div>
+        </div><!-- /.container -->
+    </div><!-- /.mainmenu -->
+
+    {% block content %}
+    <!-- Content-->
+    <div class="content">
+        <div class="container">
+            <div class="content__inner">
+
+                <div class="content__block content__block_w75">
+                    <div class="content__block-header">О Школе</div>
+                    <img class="content__img" src="{% static 'volleyballschool/images/about.jpg' %}" alt=" VolleyballSchool ">
+                    <p class="content__text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+                        ligula eget dolor.
+                        Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus
+                        mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa
+                        quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
+                </div>
+
+                <div class="content__block content__block_w25">
+                    <div class="content__block-header">Новости</div>
+                    <ul class="content__newslist">
+                        {% for news in latest_news_list %}
+                        <li><a class="content__newslink" href="news.html">{{ news.title }}</a><br>{{ news.date}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="content__block">
+                    <div class="content__block-header">Расписание</div>
+                    <div class="content__text content__text_mh160">
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
+                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+                            consequat massa quis enim.</p>
+                    </div>
+                    <a class="btn" href="timetable.html">Подробнее</a>
+                </div>
+
+                <div class="content__block">
+                    <div class="content__block-header">Залы</div>
+                    <div class="content__text content__text_mh160">
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                            Aenean massa.</p>
+                    </div>
+                    <a class="btn" href="courts.html">Подробнее</a>
+                </div>
+
+                <div class="content__block">
+                    <div class="content__block-header">Цены</div>
+                    <div class="content__text content__text_mh160">
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
+                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+                            consequat massa quis enim.</p>
+                    </div>
+                    <a class="btn" href="prices.html">Подробнее</a>
+                </div>
+
+                <div class="content__block">
+                    <div class="content__block-header">Тренеры</div>
+                    <div class="content__text content__text_mh160">
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
+                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+                            consequat massa quis enim.</p>
+                    </div>
+                    <a class="btn" href="coaches.html">Подробнее</a>
+                </div>
+
+                <div class="content__block">
+                    <div class="content__block-header">Уровни</div>
+                    <div class="content__text content__text_mh160">
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
+                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+                            consequat massa quis enim.</p>
+                    </div>
+                    <a class="btn" href="levels.html">Подробнее</a>
+                </div>
+
+                <div class="content__block">
+                    <div class="content__block-header">Статьи</div>
+                    <div class="content__text content__text_mh160">
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
+                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
+                            ridiculus mus.</p>
+                    </div>
+                    <a class="btn" href="articles.html">Подробнее</a>
+                </div>
+
+            </div><!-- /.content__inner-->
+        </div><!-- /.container -->
+    </div><!-- /.content-->
+    {% endblock content %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__inner">
+
+                <div class="footer__block">
+                    <h4 class="footer__header">Услуги</h4>
+
+                    <nav>
+                        <a class="footer__link" href="#">Расположение залов</a><br>
+                        <a class="footer__link" href="#">Цены на тренировки</a><br>
+                        <a class="footer__link" href="#">Статьи о волейболе</a><br>
+                    </nav>
+
+                </div>
+
+                <div class="footer__block">
+                    <h4 class="footer__header">Расписание</h4>
+                    <nav>
+                        <a class="footer__link" href="#">Классический волейбол, начальный уровень</a><br>
+                        <a class="footer__link" href="#">Классический волейбол, уровень начальный+</a><br>
+                        <a class="footer__link" href="#">Классический волейбол, средний уровень</a><br>
+                    </nav>
+                </div>
+
+                <div class="footer__block">
+                    <h4 class="footer__header">Контакты</h4>
+
+                    <div class="footer__contacts">
+                        Мобильный: +7 (999) 999-99-99 <br>
+                        E-mail: info@mail.com
+                    </div>
+
+                    <div class="social social_footer">
+                        <a class="social__link" href="#">
+                            <svg class="social__icon">
+                                <use xlink:href="#telegram"></use>
+                            </svg>
+                        </a>
+                        <a class="social__link" href="#">
+                            <svg class="social__icon">
+                                <use xlink:href="#instagram"></use>
+                            </svg>
+                        </a>
+                        <a class="social__link" href="#">
+                            <svg class="social__icon">
+                                <use xlink:href="#youtube"></use>
+                            </svg>
+                        </a>
+                        <a class="social__link" href="#">
+                            <svg class="social__icon">
+                                <use xlink:href="#vkontakte"></use>
+                            </svg>
+                        </a>
+                        <a class="social__link" href="#">
+                            <svg class="social__icon">
+                                <use xlink:href="#facebook"></use>
+                            </svg>
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div><!-- /.container -->
+    </footer>
+
+    <div class="copyright">
+        <div class="container">
+            <div class="copyright__inner">
+                Copyright 2021 VolleyballSchool | Все права защищены |
+                <a class="copyright__link" href="#">Политика конфиденциальности</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
