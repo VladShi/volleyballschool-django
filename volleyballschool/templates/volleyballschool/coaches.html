@@ -1,0 +1,30 @@
+{% extends "./index.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header">
+                <h1>Тренерский состав</h1>
+            </div>
+
+            {% for coach in coaches_list %}
+            <div class="content__block">
+                {% if coach.photo %}
+                <img class="content__img" src="{{ coach.photo.url }}">
+                {% else %}
+                <img class="content__img" src="{% static 'volleyballschool/images/coach-photo_default.jpg' %}">
+                {% endif %}
+                <div class="content__block-header">{{ coach.name }}</div>
+                <div class="content__text">
+                    <p>{{ coach.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div><!-- /.content__inner-->
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}

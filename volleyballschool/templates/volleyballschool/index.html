@@ -145,7 +145,7 @@
                     <a class="nav__link" href="timetable.html">Расписание</a>
                     <a class="nav__link" href="prices.html">Цены</a>
                     <a class="nav__link" href="courts.html">Залы</a>
-                    <a class="nav__link" href="coaches.html">Tренеры</a>
+                    <a class="nav__link" href="{% url 'coaches' %}">Tренеры</a>
                     <a class="nav__link" href="articles.html">Статьи</a>
                     <a class="nav__link" href="{% url 'news' %}">Новости</a>
                 </nav>
@@ -162,7 +162,8 @@
 
                 <div class="content__block content__block_w75">
                     <div class="content__block-header">О Школе</div>
-                    <img class="content__img" src="{% static 'volleyballschool/images/about.jpg' %}" alt=" VolleyballSchool ">
+                    <img class="content__img" src="{% static 'volleyballschool/images/about.jpg' %}"
+                        alt=" VolleyballSchool ">
                     <p class="content__text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
                         ligula eget dolor.
                         Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus
@@ -174,7 +175,8 @@
                     <div class="content__block-header">Новости</div>
                     <ul class="content__newslist">
                         {% for news in latest_news_list %}
-                        <li><a class="content__newslink" href="{% url 'news' %}">{{ news.title }}</a><br>{{ news.date}}</li>
+                        <li><a class="content__newslink" href="{% url 'news' %}">{{ news.title }}</a><br>{{ news.date}}
+                        </li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -218,7 +220,7 @@
                             ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
                             consequat massa quis enim.</p>
                     </div>
-                    <a class="btn" href="coaches.html">Подробнее</a>
+                    <a class="btn" href="{% url 'coaches' %}">Подробнее</a>
                 </div>
 
                 <div class="content__block">
