@@ -12,8 +12,9 @@ Class-based views
 """
 from django.urls import path
 
-from .views import IndexView
+from .views import *
 
 urlpatterns = [
-    path('', IndexView.as_view(), name='index_page')
+    path('', IndexView.as_view(), name='index_page'),
+    path('news/', News.as_view(), name='news'),
 ]

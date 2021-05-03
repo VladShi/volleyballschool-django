@@ -147,7 +147,7 @@
                     <a class="nav__link" href="courts.html">Залы</a>
                     <a class="nav__link" href="coaches.html">Tренеры</a>
                     <a class="nav__link" href="articles.html">Статьи</a>
-                    <a class="nav__link" href="news.html">Новости</a>
+                    <a class="nav__link" href="{% url 'news' %}">Новости</a>
                 </nav>
 
             </div>
@@ -174,7 +174,7 @@
                     <div class="content__block-header">Новости</div>
                     <ul class="content__newslist">
                         {% for news in latest_news_list %}
-                        <li><a class="content__newslink" href="news.html">{{ news.title }}</a><br>{{ news.date}}</li>
+                        <li><a class="content__newslink" href="{% url 'news' %}">{{ news.title }}</a><br>{{ news.date}}</li>
                         {% endfor %}
                     </ul>
                 </div>

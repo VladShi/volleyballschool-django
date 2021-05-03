@@ -154,7 +154,7 @@ body {
 
 .content {
     margin: 20px 0;
-    min-height: 75vh;
+    min-height: 70vh;
 }
 
 .content__inner {
@@ -317,4 +317,29 @@ body {
 
 .copyright__link:hover {
     text-decoration: underline;
+}
+
+
+/* Pagination
+===================================== */
+
+.pagination {
+    margin: 15px auto;
+    width: 100%;
+    text-align: center;
+}
+
+.pagination__step-links a {
+    font-size: 14px;
+    margin-right: 5px;
+    margin-left: 5px;
+    text-decoration: none;
+    color:#9c9c9c;
+}
+
+.pagination__current {
+    font-size: 16px;
+    font-weight: 700;
+    padding-right: 8px;
+    padding-left: 8px;
 }

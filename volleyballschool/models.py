@@ -9,8 +9,9 @@ class News(models.Model):
     date = models.DateField('Дата', auto_now_add=True)
     
     def __str__(self):
-        return self.title[:20] + '...'
+        return self.title[:30] + '...'
     
     class Meta:
+        ordering = ["-date"]
         verbose_name = 'Новость'
         verbose_name_plural = 'Новости'
