@@ -1,0 +1,30 @@
+{% extends "./index.html" %}
+
+{% block content %}
+    <!-- Content-->
+    <div class="content">
+        <div class="container">
+            <div class="content__inner">
+
+                <div class="content__header">
+                    <h1>Расположение залов Школы Волейбола</h1>
+                </div>
+
+                <div class="content__block content__block_w100">
+                    <p class="content__text">{% lorem 100 w random %}</p>
+                    Наши залы располагаются возле следующих станций метро:
+                    <ul class="content__courts-list li">
+                        {% for metro in courts_metro_list %}
+                            <li>{{ metro }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="content__block content__block_w100">
+                    <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A6631ced9c1b883e9eb25bd8497317a83161535ddd1a124ba60b4060c9d7878ef&amp;width=100%25&amp;height=440&amp;lang=ru_RU&amp;scroll=true"></script>
+                </div>
+            
+            </div><!-- /.content__inner-->
+        </div><!-- /.container -->
+    </div><!-- /.content-->
+{% endblock %}

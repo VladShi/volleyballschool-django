@@ -70,3 +70,26 @@ class OneTimeTraining(models.Model):
     class Meta:
         verbose_name = 'Стоимость разового занятия'
         verbose_name_plural = 'Стоимость разового занятия'
+
+
+class Courts(models.Model):
+    """Волейбольные залы"""
+
+    name = models.CharField('Имя', max_length=120)
+    description = models.TextField('Описание', blank=True)
+    photo = models.ImageField(
+        'Фото', upload_to='photos_of_courts/', blank=True)
+    address = models.CharField('Адрес', max_length=120)
+    metro = models.CharField('Станция метро', max_length=50)
+    longitude = models.DecimalField(
+        'Долгота', max_digits=9, decimal_places=6, blank=True, null=True)
+    latitude = models.DecimalField(
+        'Широта', max_digits=9, decimal_places=6, blank=True, null=True)
+    active = models.BooleanField('Активный')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Зал'
+        verbose_name_plural = 'Залы'

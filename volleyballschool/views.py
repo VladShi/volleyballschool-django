@@ -1,6 +1,6 @@
 from django.views.generic import ListView, TemplateView
 
-from .models import News, Coaches, SubscriptionSamples, OneTimeTraining
+from .models import News, Coaches, SubscriptionSamples, OneTimeTraining, Courts
 
 
 class IndexView(ListView):
@@ -35,3 +35,11 @@ class PricesView(TemplateView):
             active=True)
         context['one_time_training'] = OneTimeTraining.objects.first()
         return context
+
+
+class CourtsView(ListView):
+
+    template_name = 'volleyballschool/courts.html'
+    queryset = Courts.objects.filter(
+        active=True).values_list('metro', flat=True)
+    context_object_name = 'courts_metro_list'

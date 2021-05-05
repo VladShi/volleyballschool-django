@@ -250,6 +250,13 @@ body {
     box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, .3);
 }
 
+.content__courts-list li {
+    display: block;
+    width: 33%;
+    float: left;
+    line-height: 1.5;
+}
+
 /* Footer
 ===================================== */
 
