@@ -2,6 +2,7 @@ from django.db import models
 
 
 class News(models.Model):
+
     title = models.CharField('Заголовок', max_length=120)
     text = models.TextField('Текст', blank=True)
     image = models.ImageField(
@@ -18,6 +19,7 @@ class News(models.Model):
 
 
 class Coaches(models.Model):
+
     name = models.CharField('Имя', max_length=100)
     description = models.TextField('Описание')
     photo = models.ImageField(
@@ -29,3 +31,42 @@ class Coaches(models.Model):
     class Meta:
         verbose_name = 'Тренер'
         verbose_name_plural = 'Тренеры'
+
+
+class SubscriptionSamples(models.Model):
+    """Шаблоны Абонементов"""
+
+    name = models.CharField('Наименование', max_length=80)
+    amount = models.PositiveIntegerField('Стоимость')
+    trainings_qty = models.PositiveSmallIntegerField('Количество тренировок')
+    validity = models.PositiveSmallIntegerField('Срок действия')
+    active = models.BooleanField('Активный')
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def price_for_one_training(self):
+        try:
+            return int(self.amount / self.trainings_qty)
+        except ZeroDivisionError:
+            return "укажите кол-во тренировок по абонементу"
+
+    class Meta:
+        verbose_name = 'Абонемент'
+        verbose_name_plural = 'Абонементы'
+
+
+class OneTimeTraining(models.Model):
+    """В таблице должна находиться только единственная запись с ценной за одну
+    тренировку. В админке отключаем возможность добавления больше одной записи
+    """
+
+    price = models.PositiveSmallIntegerField('Цена')
+
+    def __str__(self):
+        return 'Изменить стоимость разового занятия'
+
+    class Meta:
+        verbose_name = 'Стоимость разового занятия'
+        verbose_name_plural = 'Стоимость разового занятия'

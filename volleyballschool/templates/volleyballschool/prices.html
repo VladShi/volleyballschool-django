@@ -1,0 +1,36 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header">
+                <h1>Стоимость услуг</h1>
+                <h2>Классический волейбол, групповые занятия (10-16 чел.)</h2>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <div class="content__block-header">Разовое посещение</div>
+                <p class="content__text">Стоимость: {{ one_time_training.price }} руб</p>
+                <p class="content__text">Длительность тренировки: 2 часа</p>
+                <a class="btn" href="#">Купить</a>
+            </div>
+
+            {% for subscription in subscription_samples %}
+            <div class="content__block content__block_w100">
+                <div class="content__block-header">{{ subscription.name }}</div>
+                <p class="content__text">Стоимость одного занятия по абонементу: 
+                    {{ subscription.price_for_one_training }} руб</p>
+                <p class="content__text">Стоимость абонемента: {{ subscription.amount }} руб</p>
+                <p class="content__text">Срок действия Абонемента: {{ subscription.validity}} дней</p>
+                <p class="content__text">Длительность тренировки: 2 часа</p>
+                <a class="btn" href="#">Купить</a>
+            </div>
+            {% endfor %}
+
+        </div><!-- /.content__inner-->
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}

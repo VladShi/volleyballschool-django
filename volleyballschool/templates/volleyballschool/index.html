@@ -143,7 +143,7 @@
 
                 <nav class="nav">
                     <a class="nav__link" href="timetable.html">Расписание</a>
-                    <a class="nav__link" href="prices.html">Цены</a>
+                    <a class="nav__link" href="{% url 'prices' %}">Цены</a>
                     <a class="nav__link" href="courts.html">Залы</a>
                     <a class="nav__link" href="{% url 'coaches' %}">Tренеры</a>
                     <a class="nav__link" href="articles.html">Статьи</a>
@@ -164,11 +164,7 @@
                     <div class="content__block-header">О Школе</div>
                     <img class="content__img" src="{% static 'volleyballschool/images/about.jpg' %}"
                         alt=" VolleyballSchool ">
-                    <p class="content__text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
-                        ligula eget dolor.
-                        Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus
-                        mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa
-                        quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
+                    <p class="content__text">{% lorem 50 w random %}</p>
                 </div>
 
                 <div class="content__block content__block_w25">
@@ -184,10 +180,7 @@
                 <div class="content__block">
                     <div class="content__block-header">Расписание</div>
                     <div class="content__text content__text_mh160">
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
-                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
-                            consequat massa quis enim.</p>
+                        <p>{% lorem 40 w random %}</p>
                     </div>
                     <a class="btn" href="timetable.html">Подробнее</a>
                 </div>
@@ -195,8 +188,7 @@
                 <div class="content__block">
                     <div class="content__block-header">Залы</div>
                     <div class="content__text content__text_mh160">
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                            Aenean massa.</p>
+                        <p>{% lorem 16 w random %}</p>
                     </div>
                     <a class="btn" href="courts.html">Подробнее</a>
                 </div>
@@ -204,21 +196,15 @@
                 <div class="content__block">
                     <div class="content__block-header">Цены</div>
                     <div class="content__text content__text_mh160">
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
-                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
-                            consequat massa quis enim.</p>
+                        <p>{% lorem 30 w random %}</p>
                     </div>
-                    <a class="btn" href="prices.html">Подробнее</a>
+                    <a class="btn" href="{% url 'prices' %}">Подробнее</a>
                 </div>
 
                 <div class="content__block">
                     <div class="content__block-header">Тренеры</div>
                     <div class="content__text content__text_mh160">
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
-                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
-                            consequat massa quis enim.</p>
+                        <p>{% lorem 35 w random %}</p>
                     </div>
                     <a class="btn" href="{% url 'coaches' %}">Подробнее</a>
                 </div>
@@ -226,10 +212,7 @@
                 <div class="content__block">
                     <div class="content__block-header">Уровни</div>
                     <div class="content__text content__text_mh160">
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
-                            ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
-                            consequat massa quis enim.</p>
+                        <p>{% lorem 32 w random %}</p>
                     </div>
                     <a class="btn" href="levels.html">Подробнее</a>
                 </div>
@@ -237,9 +220,7 @@
                 <div class="content__block">
                     <div class="content__block-header">Статьи</div>
                     <div class="content__text content__text_mh160">
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
-                            Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur
-                            ridiculus mus.</p>
+                        <p>{% lorem 20 w random %}</p>
                     </div>
                     <a class="btn" href="articles.html">Подробнее</a>
                 </div>
