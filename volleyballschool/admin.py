@@ -27,9 +27,26 @@ class OneTimeTrainingAdmin(admin.ModelAdmin):
 class SubscriptionSamplesAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'amount', 'trainings_qty', 'active',)
+    list_filter = ('active',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["name"].help_text = 'например, Абонемент на 4 занятия'
+        form.base_fields["validity"].help_text = (
+            'отсчитывается со дня посещения первой тренировки')
+        form.base_fields["active"].initial = True
+        return form
 
 
 @admin.register(Courts)
 class CourtsAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'active',)
+    list_filter = ('active',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["name"].help_text = (
+            'например, Зал на ст.м.Октябрьская')
+        form.base_fields["active"].initial = True
+        return form

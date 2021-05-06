@@ -37,9 +37,9 @@ class SubscriptionSamples(models.Model):
     """Шаблоны Абонементов"""
 
     name = models.CharField('Наименование', max_length=80)
-    amount = models.PositiveIntegerField('Стоимость')
+    amount = models.PositiveIntegerField('Стоимость(руб.)')
     trainings_qty = models.PositiveSmallIntegerField('Количество тренировок')
-    validity = models.PositiveSmallIntegerField('Срок действия')
+    validity = models.PositiveSmallIntegerField('Срок действия(дней)')
     active = models.BooleanField('Активный')
 
     def __str__(self):
@@ -62,7 +62,7 @@ class OneTimeTraining(models.Model):
     тренировку. В админке отключаем возможность добавления больше одной записи
     """
 
-    price = models.PositiveSmallIntegerField('Цена')
+    price = models.PositiveSmallIntegerField('Цена(руб.)')
 
     def __str__(self):
         return 'Изменить стоимость разового занятия'
