@@ -1,6 +1,7 @@
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, DetailView
 
-from .models import News, Coaches, SubscriptionSamples, OneTimeTraining, Courts
+from .models import (News, Coaches, SubscriptionSamples,
+                     OneTimeTraining, Courts, Articles)
 
 
 class IndexView(ListView):
@@ -43,3 +44,17 @@ class CourtsView(ListView):
     queryset = Courts.objects.filter(
         active=True).values_list('metro', flat=True)
     context_object_name = 'courts_metro_list'
+
+
+class ArticlesView(ListView):
+
+    queryset = Articles.objects.filter(active=True)
+    template_name = 'volleyballschool/articles.html'
+    context_object_name = 'articles_list'
+    paginate_by = 5
+
+
+class ArticleDetailView(DetailView):
+
+    model = Articles
+    context_object_name = 'article'

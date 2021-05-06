@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import News, Coaches, SubscriptionSamples, OneTimeTraining, Courts
+from .models import (News, Coaches, SubscriptionSamples,
+                     OneTimeTraining, Courts, Articles)
 
 
 @admin.register(News)
@@ -48,5 +49,21 @@ class CourtsAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields["name"].help_text = (
             'например, Зал на ст.м.Октябрьская')
+        form.base_fields["active"].initial = True
+        return form
+
+
+@admin.register(Articles)
+class ArticlesAdmin(admin.ModelAdmin):
+
+    list_display = ('title', 'active',)
+    prepopulated_fields = {"slug": ("title",)}
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["title"].help_text = (
+            'максимум 180 символов')
+        form.base_fields["short_description"].help_text = (
+            'текст будет отображен в списке статей, максимум 400 символов')
         form.base_fields["active"].initial = True
         return form

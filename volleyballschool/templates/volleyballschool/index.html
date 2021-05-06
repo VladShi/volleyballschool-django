@@ -146,7 +146,7 @@
                     <a class="nav__link" href="{% url 'prices' %}">Цены</a>
                     <a class="nav__link" href="{% url 'courts' %}">Залы</a>
                     <a class="nav__link" href="{% url 'coaches' %}">Tренеры</a>
-                    <a class="nav__link" href="articles.html">Статьи</a>
+                    <a class="nav__link" href="{% url 'articles' %}">Статьи</a>
                     <a class="nav__link" href="{% url 'news' %}">Новости</a>
                 </nav>
 
@@ -222,7 +222,7 @@
                     <div class="content__text content__text_mh160">
                         <p>{% lorem 20 w random %}</p>
                     </div>
-                    <a class="btn" href="articles.html">Подробнее</a>
+                    <a class="btn" href="{% url 'articles' %}">Подробнее</a>
                 </div>
 
             </div><!-- /.content__inner-->

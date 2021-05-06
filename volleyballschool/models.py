@@ -1,5 +1,7 @@
 from django.db import models
 
+from ckeditor_uploader.fields import RichTextUploadingField
+
 
 class News(models.Model):
 
@@ -93,3 +95,25 @@ class Courts(models.Model):
     class Meta:
         verbose_name = 'Зал'
         verbose_name_plural = 'Залы'
+
+
+class Articles(models.Model):
+
+    title = models.CharField('Заголовок', max_length=180)
+    slug = models.SlugField('Slug( URL )', max_length=200,
+                            unique=True, db_index=True)
+    short_description = models.TextField(
+        'Краткое описание статьи', max_length=400)
+    text = RichTextUploadingField('Текст')
+    active = models.BooleanField('Активна')
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('article-detail', args=[str(self.slug)])
+
+    class Meta:
+        verbose_name = 'Статья'
+        verbose_name_plural = 'Статьи'

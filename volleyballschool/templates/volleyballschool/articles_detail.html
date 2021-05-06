@@ -1,0 +1,20 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header">
+                <h1>{{ article.title }}</h1>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <p class="content__text">{{ article.text | safe }}</p>
+            </div>
+
+        </div><!-- /.content__inner-->
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}

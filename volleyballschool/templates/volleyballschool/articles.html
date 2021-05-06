@@ -1,0 +1,46 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header">
+                <h1>Статьи о волейболе</h1>
+            </div>
+
+            {% for article in articles_list %}
+            <div class="content__block content__block_w100">
+                <div class="content__block-header">{{ article.title }}</div>
+                    <p class="content__text">{{ article.short_description }}</p>
+                    <a class="btn" href="{{ article.get_absolute_url }}">К статье</a>
+            </div>
+            {% endfor %}
+
+            {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                <span class="pagination__step-links">
+                    <a href="?page=1">&laquo; в начало</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+                </span>
+                {% endif %}
+
+                <span class="pagination__current">
+                    {{ page_obj.number }}
+                </span>
+
+                {% if page_obj.has_next %}
+                <span class="pagination__step-links">
+                    <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">в конец &raquo;</a>
+                </span>
+                {% endif %}</span>
+            </div>
+            {% endif %}
+
+        </div><!-- /.content__inner-->
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}
