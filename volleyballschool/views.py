@@ -1,4 +1,8 @@
-from django.views.generic import ListView, TemplateView, DetailView
+from django.views.generic import ListView, TemplateView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 from .models import (News, Coaches, SubscriptionSamples,
                      OneTimeTraining, Courts, Articles)
@@ -58,3 +62,21 @@ class ArticleDetailView(DetailView):
 
     model = Articles
     context_object_name = 'article'
+
+
+class AccountView(LoginRequiredMixin, TemplateView):
+
+    template_name = 'volleyballschool/account.html'
+    login_url = '/login/'
+
+
+class RegisterUser(CreateView):
+
+    # CustomUserCreationForm
+    form_class = UserCreationForm
+    template_name = "volleyballschool/register.html"
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('/login/')

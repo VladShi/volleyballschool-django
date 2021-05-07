@@ -1,0 +1,54 @@
+{% extends "./index.html" %}
+
+{% block content %}
+    <!-- Content-->
+    <div class="content">
+        <div class="container">
+            <div class="content__inner">
+
+                <div class="content__header">
+                    <h1>Иванов Иван Иваныч</h1>
+                </div>
+
+                <div class="content__block content__block_w100">
+                    <div class="content__block-header">Сумма на счету</div>
+                        <p class="content__text"><h3>1200 руб.</h3></p>
+                        <a class="btn" href="#">Пополнить</a>
+                </div>
+
+                <div class="content__block content__block_w100">
+                    <div class="content__block-header">Действующие абонементы</div>
+                    <div class="content__text">
+                        <p>Абонемент на 8 занятий. Действителен с 01.01.2021 по 01.02.2021</p>
+                        <p>Осталось занятий: <b>7</b></p>
+                    </div>
+                </div>
+
+                <div class="content__block content__block_w100">
+                    <div class="content__block-header">Ваши записи на предстоящие тренировки</div>
+                    <div class="content__text">
+                        <p>Зал на ст.м.Дубровка, 05.01.2021 Вт 19:00</p>
+                        <p>Адрес зала: ул.Дубровский вал, д.45, Школа 456</p>
+                        <a class="btn" href="#">Отменить запись</a>
+                        <p>Зал на ст.м.Дубровка, 07.01.2021 Чт 19:00</p>
+                        <p>Адрес зала: ул.Дубровский вал, д.45, Школа 456</p>
+                        <a class="btn" href="#">Отменить запись</a>
+                    </div>
+                </div>
+
+                <div class="content__block content__block_w100">
+                    <div class="content__block-header">Последний абонемент</div>
+                    <div class="content__text">
+                        <p>Абонемент на 8 занятий. Был действителен с 01.01.2021 по 01.02.2021</p>
+                        <p>Не использованных занятий: <b>0</b></p>
+                    </div>
+                </div>
+
+                <div class="content__block content__block_w100">
+                    <a class="btn" href="{% url 'logout' %}">Выйти из аккаунта</a>
+                </div>
+
+            </div><!-- /.content__inner-->
+        </div><!-- /.container -->
+    </div><!-- /.content-->
+{% endblock %}

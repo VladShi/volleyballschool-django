@@ -11,9 +11,11 @@ Class-based views
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 """
 from django.urls import path
+from django.contrib.auth import views as auth_views
 
-from .views import (IndexView, NewsView, CoachesView,
-                    PricesView, CourtsView, ArticlesView, ArticleDetailView)
+from .views import (IndexView, NewsView, CoachesView, PricesView,
+                    CourtsView, ArticlesView, ArticleDetailView, AccountView,
+                    RegisterUser, logout_user)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index_page'),
@@ -22,6 +24,18 @@ urlpatterns = [
     path('prices/', PricesView.as_view(), name='prices'),
     path('courts/', CourtsView.as_view(), name='courts'),
     path('articles/', ArticlesView.as_view(), name='articles'),
-    path('articles/<slug:slug>/', ArticleDetailView.as_view(),
-         name='article-detail'),
+    path(
+        'articles/<slug:slug>/',
+        ArticleDetailView.as_view(),
+        name='article-detail',
+    ),
+    path('account/', AccountView.as_view(), name='account'),
+    path(
+        'login/',
+        auth_views.LoginView.as_view(
+            template_name='volleyballschool/login.html',
+        ),
+    ),
+    path('register/', RegisterUser.as_view(), name='register'),
+    path('logout/', logout_user, name='logout'),
 ]
