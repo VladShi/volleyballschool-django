@@ -1,6 +1,18 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 from ckeditor_uploader.fields import RichTextUploadingField
+
+
+class User(AbstractUser):
+
+    patronymic = models.CharField('Отчество', max_length=150, blank=True)
+    balance = models.DecimalField(
+        'Баланс', max_digits=9, decimal_places=2, default=0)
+    passport_number = models.CharField(
+        'Номер паспорта', max_length=15, blank=True)
+    passport_data = models.CharField(
+        'Паспортные данные', max_length=195, blank=True)
 
 
 class News(models.Model):
@@ -88,6 +100,7 @@ class Courts(models.Model):
     latitude = models.DecimalField(
         'Широта', max_digits=9, decimal_places=6, blank=True, null=True)
     active = models.BooleanField('Активный')
+    passport_required = models.BooleanField('Требуется паспорт')
 
     def __str__(self):
         return self.name

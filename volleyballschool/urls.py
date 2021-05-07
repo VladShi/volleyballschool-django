@@ -35,6 +35,7 @@ urlpatterns = [
         auth_views.LoginView.as_view(
             template_name='volleyballschool/login.html',
         ),
+        name='login',
     ),
     path('register/', RegisterUser.as_view(), name='register'),
     path('logout/', logout_user, name='logout'),

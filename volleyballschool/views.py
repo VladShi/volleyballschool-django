@@ -67,7 +67,7 @@ class ArticleDetailView(DetailView):
 class AccountView(LoginRequiredMixin, TemplateView):
 
     template_name = 'volleyballschool/account.html'
-    login_url = '/login/'
+    login_url = 'login'
 
 
 class RegisterUser(CreateView):
@@ -79,4 +79,4 @@ class RegisterUser(CreateView):
 
 def logout_user(request):
     logout(request)
-    return redirect('/login/')
+    return redirect('login')

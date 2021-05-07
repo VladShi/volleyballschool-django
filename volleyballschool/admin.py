@@ -1,7 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-from .models import (News, Coaches, SubscriptionSamples,
+from .models import (User, News, Coaches, SubscriptionSamples,
                      OneTimeTraining, Courts, Articles)
+
+
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(News)

@@ -21,10 +21,12 @@
             {% for subscription in subscription_samples %}
             <div class="content__block content__block_w100">
                 <div class="content__block-header">{{ subscription.name }}</div>
-                <p class="content__text">Стоимость одного занятия по абонементу: 
+                <p class="content__text">Стоимость одного занятия по абонементу:
                     {{ subscription.price_for_one_training }} руб</p>
                 <p class="content__text">Стоимость абонемента: {{ subscription.amount }} руб</p>
-                <p class="content__text">Срок действия Абонемента: {{ subscription.validity}} дней</p>
+                <p class="content__text">Срок действия Абонемента: {{ subscription.validity}} дней, <br>
+                    <i style="padding-left: 10px; color:dimgrey">с момента первого посещения тренировки,
+                        но не позднее чем 10 дней с момента покупки.</i></p>
                 <p class="content__text">Длительность тренировки: 2 часа</p>
                 <a class="btn" href="#">Купить</a>
             </div>

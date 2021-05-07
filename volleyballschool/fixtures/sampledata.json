@@ -1,0 +1,199 @@
+[
+    {
+      "model": "volleyballschool.news",
+      "pk": 1,
+      "fields": {
+        "title": "Добавили ещё один зал",
+        "text": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.",
+        "image": "",
+        "date": "2021-04-02"
+      }
+    },
+    {
+      "model": "volleyballschool.news",
+      "pk": 2,
+      "fields": {
+        "title": "Набор в команду",
+        "text": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,",
+        "image": "",
+        "date": "2021-04-06"
+      }
+    },
+    {
+      "model": "volleyballschool.news",
+      "pk": 3,
+      "fields": {
+        "title": "Добавили тренажер",
+        "text": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.",
+        "image": "",
+        "date": "2021-04-15"
+      }
+    },
+    {
+      "model": "volleyballschool.news",
+      "pk": 4,
+      "fields": {
+        "title": "Новый тренер",
+        "text": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+        "image": "",
+        "date": "2021-04-21"
+      }
+    },
+    {
+      "model": "volleyballschool.news",
+      "pk": 5,
+      "fields": {
+        "title": "С 1 по 10  мая отдыхаем",
+        "text": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.",
+        "image": "",
+        "date": "2021-04-26"
+      }
+    },
+    {
+      "model": "volleyballschool.coaches",
+      "pk": 1,
+      "fields": {
+        "name": "Алекно Владимир Романович",
+        "description": "Советский и российский волейболист, волейбольный тренер. Главный тренер мужской сборной России (в 2007—2008, 2011—2012 и 2015—2016 годах), которую привёл к победе на Олимпийских играх в Лондоне (2012). Заслуженный тренер России",
+        "photo": ""
+      }
+    },
+    {
+      "model": "volleyballschool.coaches",
+      "pk": 2,
+      "fields": {
+        "name": "Карполь Николай Васильевич",
+        "description": "Советский и российский волейбольный тренер. Возглавлял женские сборные СССР (1978—1982, 1987—1991), СНГ (1992), России (1993—2004) и Белоруссии (2009—2010). Президент и главный тренер клуба «Уралочка-НТМК» Екатеринбург",
+        "photo": ""
+      }
+    },
+    {
+      "model": "volleyballschool.coaches",
+      "pk": 3,
+      "fields": {
+        "name": "Бабешин Алексей",
+        "description": "профессиональную карьеру начал в 1998 году в новомосковском «Танаисе», где отыграл 4 сезона. Впоследствии он выступал за столичные команды «Динамо» (2002-2003) и «Луч» (2003-2004), а также новоуренгойский «Факел» (2004-2005). Летом 2005 года Бабешин перешел в «Локомотив-Изумруд» и защищал цвета уральской команды два сезона.\r\n\r\nВ 2019 года вошёл в тренерский штатб в клубе «Динамо» (Москва).",
+        "photo": ""
+      }
+    },
+    {
+      "model": "volleyballschool.coaches",
+      "pk": 4,
+      "fields": {
+        "name": "Вербов Алексей",
+        "description": "Суперзвезда мирового волейбола, многолетний либеро сборной России Алексей Вербов два года назад завершил игровую карьеру и сосредоточился на тренерской деятельности.",
+        "photo": ""
+      }
+    },
+    {
+      "model": "volleyballschool.subscriptionsamples",
+      "pk": 1,
+      "fields": {
+        "name": "Абонемент на 4 занятия",
+        "amount": 3040,
+        "trainings_qty": 4,
+        "validity": 30,
+        "active": true
+      }
+    },
+    {
+      "model": "volleyballschool.subscriptionsamples",
+      "pk": 2,
+      "fields": {
+        "name": "Абонемент на 8 занятий",
+        "amount": 5600,
+        "trainings_qty": 8,
+        "validity": 30,
+        "active": true
+      }
+    },
+    {
+      "model": "volleyballschool.onetimetraining",
+      "pk": 1,
+      "fields": {
+        "price": 850
+      }
+    },
+    {
+      "model": "volleyballschool.courts",
+      "pk": 1,
+      "fields": {
+        "name": "Зал м.Менделеевксая",
+        "description": "",
+        "photo": "",
+        "address": "Менделеевксая",
+        "metro": "Менделеевксая",
+        "longitude": null,
+        "latitude": null,
+        "active": true,
+        "passport_required": false
+      }
+    },
+    {
+      "model": "volleyballschool.courts",
+      "pk": 2,
+      "fields": {
+        "name": "Зал м.Авиаматорная",
+        "description": "",
+        "photo": "",
+        "address": "Авиаматорная",
+        "metro": "Авиаматорная",
+        "longitude": null,
+        "latitude": null,
+        "active": true,
+        "passport_required": false
+      }
+    },
+    {
+      "model": "volleyballschool.courts",
+      "pk": 3,
+      "fields": {
+        "name": "Зал м.Октябрьская",
+        "description": "",
+        "photo": "",
+        "address": "Октябрьская",
+        "metro": "Октябрьская",
+        "longitude": null,
+        "latitude": null,
+        "active": true,
+        "passport_required": false
+      }
+    },
+    {
+      "model": "volleyballschool.courts",
+      "pk": 4,
+      "fields": {
+        "name": "Зал м.Славянский Бульвар",
+        "description": "",
+        "photo": "",
+        "address": "Славянский Бульвар",
+        "metro": "Славянский Бульвар",
+        "longitude": null,
+        "latitude": null,
+        "active": true,
+        "passport_required": false
+      }
+    },
+    {
+      "model": "volleyballschool.articles",
+      "pk": 1,
+      "fields": {
+        "title": "НАПАДАЮЩИЙ УДАР В ВОЛЕЙБОЛЕ",
+        "slug": "napadayushij-udar-v-volejbole",
+        "short_description": "Поговорим о технике нападающего удара",
+        "text": "<div>\r\n<div>\r\n<p><strong>Поговорим о технике нападающего удара</strong></p>\r\n</div>\r\n</div>\r\n\r\n<div>\r\n<div>\r\n<div>\r\n<p>Набрать очки в игре и одержать победу в волейболе можно благодаря атакам &ndash; именно за счет правильных нападающих ударов удается вывести соперника из равновесия и добиться касания мяча о напольное покрытие волейбольного поля.</p>\r\n</div>\r\n</div>\r\n</div>\r\n\r\n<div>\r\n<div>\r\n<div>\r\n<p>Давайте немного подкрепим данные слова спортивной статистикой. Итак, очки набираются:</p>\r\n\r\n<ul>\r\n\t<li>в 50-60-% случаях &ndash; при атаке;</li>\r\n\t<li>в 5-30% случаях &ndash; при ошибках соперника;</li>\r\n\t<li>в 1-20% случаях &ndash; с подачи.</li>\r\n</ul>\r\n</div>\r\n</div>\r\n</div>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<div>\r\n<div>\r\n<div>\r\n<p><strong>Диагональ</strong></p>\r\n</div>\r\n</div>\r\n</div>\r\n\r\n<div>\r\n<div>\r\n<div>\r\n<p>Закрыть площадку от нападающего при постановке блока волейболистам не всегда удается в полной мере. Очень часто остаются открытыми те зоны, куда сложнее всего попасть. Так что блокирующие игроки чаще всего прикрывают центральную часть поля, оставляя диагональные направления свободными. Получается, что часто нападающие совершают диагональный удар &ndash; то есть, проводят атаку мячом до противоположного угла. Там, как правило, никого нет или стоит только один защитник.</p>\r\n</div>\r\n</div>\r\n</div>\r\n\r\n<div>\r\n<div>\r\n<div>\r\n<p>Если выбрать ходовое направление, то в этом случае меньше шансов выйти в аут. Но при этом увеличивается количество &laquo;блокировщиков&raquo; - на пути мяча их будет уже двое. А, как известно, обыграть двух опытных защитников &ndash; задача не простая. Поэтому нужно за доли секунды принимать решение о диагональном или ходовом ударе, учитывая ситуацию.</p>\r\n</div>\r\n</div>\r\n</div>\r\n\r\n<p>&nbsp;L<code>orem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretiu</code>m quis, sem. Nulla consequat massa quis enim. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean co<span style=\"color:#e74c3c\">mmodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo</span> ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.</p>\r\n\r\n<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.</p>",
+        "active": true
+      }
+    },
+    {
+      "model": "volleyballschool.articles",
+      "pk": 2,
+      "fields": {
+        "title": "10 самых интересных фактов о волейболе",
+        "slug": "10-samyh-interesnyh-faktov-o-volejbole",
+        "short_description": "Волейбол популярен по всему миру благодаря простым правилам и увлекательности игры. В данной статье собрана подборка самых интересных особенностей волейбола.",
+        "text": "<h2>1. Кто придумал волейбол</h2>\r\n\r\n<p>Игра в волейбол была изобретена в 1895 году Уильямом Морганом. Это был гениальный преподаватель физкультуры, который назвал эту дисциплину mintonette. Такое название было производным слова badminton.</p>\r\n\r\n<h2>2. 100 000 человек на матче</h2>\r\n\r\n<p>В 1964 году данный вид спорта был представлен на олимпийских играх, а в 1983 году на матч СССР и Бразилии собрались 100 000 человек. Это рекорд посещаемости волейбольного матча в мире.</p>\r\n\r\n<h2>3. Прыгай 250 раз за матч</h2>\r\n\r\n<p>Большинство волейболистов прыгают в среднем 250 раз за матч и пробегают расстояние в 750 метров, поэтому у профессионалов очень развиты мышцы ног. Данный вид спорт тренирует все виды мышц и является наиболее безопасным из игр с мячом.&nbsp;</p>\r\n\r\n<h2>4. Волейбол синтез других игр</h2>\r\n\r\n<p>Волейбол на разных этапах включал в себя особенности других спортивных игр, таких как теннис, гандбол, бейсбол и баскетбол. Раньше в качестве разделителя использовалась теннисная сетка, высота которой 1970 мм. До 1900 года в волейболе использовалась резиновая камера похожая на баскетбольный мяч.</p>\r\n\r\n<h2>5. Молниеносная подача</h2>\r\n\r\n<p>Скорость полета мяча в среднем составляет 60 километров в час. Максимально зафиксированная подача составляла 135 километров в час. Рекорд принадлежит Болгарскому волейболисту Матею Казийски.</p>\r\n\r\n<h2>6. Самый высокий прыжок</h2>\r\n\r\n<p>Матей Казийски помимо непревзойденной скорости подачи обладает рекордом по высоте прыжка. Уровень максимальной точки касания мяча зафиксирован на отметке 3 м 93 см. Высота спортсмена составляет 203 см. Таким образом прыжок составил 190 см выше роста спортсмена.</p>\r\n\r\n<h2>7. Каждый десятый житель планеты волейболист</h2>\r\n\r\n<p>Волейбол сегодня является вторым по популярности видом спорта в мире, уступая только футболу. На уровне увлечения им занимаются около одного миллиарда людей или 15 процентов всех людей планеты.</p>\r\n\r\n<h2>8. Самый результативный матч</h2>\r\n\r\n<p>Самый эффективный игрок в мире оказался из сборной Канады по имени Гэвин Шмитт. За один матч он принес своей команде 58 очков.</p>\r\n\r\n<h2>9. Главное не касаться земли</h2>\r\n\r\n<p>Волейбол - единственная игра по правилам которой мяч не может касаться земли. Также волейбол &mdash; это игра где играют не на время, а на результат. Благодаря этому правилу длительность матча может быть бесконечно увеличена.</p>\r\n\r\n<h2>10. Долгий волейбол</h2>\r\n\r\n<p>В истории олимпийских игр был случай в 1976 году, когда сборные Польши и СССР играли в волейбол 6,5 часов. Но абсолютный рекорд был зафиксирован в Кингстоне, штат Северная Каролина. Продолжительность матча составила 75,5 часов! Это больше 3 дней!</p>",
+        "active": true
+      }
+    }
+  ]
