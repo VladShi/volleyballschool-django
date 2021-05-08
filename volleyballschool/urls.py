@@ -15,7 +15,7 @@ from django.contrib.auth import views as auth_views
 
 from .views import (IndexView, NewsView, CoachesView, PricesView,
                     CourtsView, ArticlesView, ArticleDetailView, AccountView,
-                    RegisterUser, logout_user)
+                    RegisterUserView, logout_user)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index_page'),
@@ -37,6 +37,6 @@ urlpatterns = [
         ),
         name='login',
     ),
-    path('register/', RegisterUser.as_view(), name='register'),
+    path('register/', RegisterUserView.as_view(), name='register'),
     path('logout/', logout_user, name='logout'),
 ]

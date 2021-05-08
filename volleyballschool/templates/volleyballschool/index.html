@@ -119,12 +119,22 @@
                             <use xlink:href="#facebook"></use>
                         </svg>
                     </a>
+
+                    {% if request.user.is_authenticated %}
+                    <svg class="social__icon social__icon_loggined">
+                        <use xlink:href="#usericon"></use>
+                    </svg>
+                    <a class="social__link" href="{% url 'account' %}">
+                        <span class="social__link_login">Личный кабинет</span>
+                    </a>
+                    {% else %}
                     <a class="social__link" href="{% url 'account' %}">
                         <svg class="social__icon">
                             <use xlink:href="#usericon"></use>
                         </svg>
                         <span class="social__link_login">Личный кабинет</span>
                     </a>
+                    {% endif %}
                 </div>
 
             </div><!-- /.header__inner -->

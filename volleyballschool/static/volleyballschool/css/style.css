@@ -98,6 +98,12 @@ body {
     fill:#fff;
 }
 
+.social__icon_loggined {
+    fill:rgb(120, 239, 255);
+    margin-right: -20px;
+    margin-left: 20px;
+}
+
 .social_footer {
     margin-top: 6px;
 }
@@ -257,7 +263,8 @@ body {
 }
 
 .content__login-form {
-    padding-top: 200px;
+    padding-top: 150px;
+    padding-bottom: 40px;
     margin: 0 auto;
 }
 
@@ -271,7 +278,12 @@ body {
     margin-left: 174px;
 }
 
-.content__login-registr {
+.content__login-form .errorlist {
+    max-width: 500px;
+    color:brown;
+}
+
+.content__login-register {
     margin: 17px auto;
     padding-left: 174px;
     font-size: 14px;
@@ -286,6 +298,38 @@ body {
 .content__login-link:hover {
     color: #3a57d8;
     text-shadow: 1px 1px 1px rgb(145, 224, 255), 2px 2px 2px rgba(0,0,0,0.4);
+}
+
+.content__register-form {
+    padding-top: 30px;
+    padding-bottom: 40px;
+    margin: 0 auto;
+}
+
+.content__register-form .helptext {
+    font-size: 14px;
+    color:dimgray;
+}
+
+.content__register-form ul {
+    padding-left: 240px;
+    font-size: 14px;
+    color:dimgray;
+}
+
+.content__register-form .errorlist {
+    font-size: 16px;
+    color:rgb(231, 16, 16);
+}
+
+.content__register-form label {
+    display: inline-block;
+    width: 220px;
+    text-align: right;
+}
+
+.content__register-form button {
+    margin-left: 224px;
 }
 
 /* Footer

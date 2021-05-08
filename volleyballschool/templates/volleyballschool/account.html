@@ -7,12 +7,12 @@
             <div class="content__inner">
 
                 <div class="content__header">
-                    <h1>Иванов Иван Иваныч</h1>
+                    <h1>{{ user.first_name }} {{ user.patronymic }} {{ user.last_name }}</h1>
                 </div>
 
                 <div class="content__block content__block_w100">
                     <div class="content__block-header">Сумма на счету</div>
-                        <p class="content__text"><h3>1200 руб.</h3></p>
+                        <p class="content__text"><h3>{{ user.balance }} руб.</h3></p>
                         <a class="btn" href="#">Пополнить</a>
                 </div>
 

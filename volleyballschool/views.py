@@ -1,11 +1,12 @@
 from django.views.generic import ListView, TemplateView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 
 from .models import (News, Coaches, SubscriptionSamples,
                      OneTimeTraining, Courts, Articles)
+from .forms import RegisterUserForm
 
 
 class IndexView(ListView):
@@ -70,11 +71,11 @@ class AccountView(LoginRequiredMixin, TemplateView):
     login_url = 'login'
 
 
-class RegisterUser(CreateView):
+class RegisterUserView(CreateView):
 
-    # CustomUserCreationForm
-    form_class = UserCreationForm
+    form_class = RegisterUserForm
     template_name = "volleyballschool/register.html"
+    success_url = reverse_lazy('account')
 
 
 def logout_user(request):

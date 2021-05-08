@@ -5,13 +5,24 @@
 <div class="content">
     <div class="container">
         <div class="content__inner">
-            <div class="content__login-form">
+
+            <div class="content__header">
+                <h1>Регистрация</h1>
+            </div>
+
+            <div class="content__text">
+                Пожалуйста, вводите достоверные данные. Поскольку, для прохода в некоторые залы, находящиеся на
+                территориях учебных заведений, проход по спискам и с предъявлением паспортов.
+            </div>
+
+            <div class="content__register-form">
                 <form method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit">Регистрация</button>
                 </form>
             </div>
+            
         </div><!-- /.content__inner-->
     </div><!-- /.container -->
 </div><!-- /.content-->

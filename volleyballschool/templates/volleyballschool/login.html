@@ -5,16 +5,22 @@
 <div class="content">
     <div class="container">
         <div class="content__inner">
+
+            <div class="content__header">
+                <h1>Вход в личный кабинет</h1>
+            </div>
+
             <div class="content__login-form">
                 <form method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit">Войти</button>
                 </form>
-                <div class="content__login-registr">
+                <div class="content__login-register">
                     или <a class="content__login-link" href="{% url 'register' %}">зарегистрируйтесь</a>
                 </div>
             </div>
+
         </div><!-- /.content__inner-->
     </div><!-- /.container -->
 </div><!-- /.content-->
