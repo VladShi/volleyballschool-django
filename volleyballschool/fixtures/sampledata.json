@@ -50,7 +50,7 @@
       }
     },
     {
-      "model": "volleyballschool.coaches",
+      "model": "volleyballschool.Coach",
       "pk": 1,
       "fields": {
         "name": "Алекно Владимир Романович",
@@ -59,7 +59,7 @@
       }
     },
     {
-      "model": "volleyballschool.coaches",
+      "model": "volleyballschool.Coach",
       "pk": 2,
       "fields": {
         "name": "Карполь Николай Васильевич",
@@ -68,7 +68,7 @@
       }
     },
     {
-      "model": "volleyballschool.coaches",
+      "model": "volleyballschool.Coach",
       "pk": 3,
       "fields": {
         "name": "Бабешин Алексей",
@@ -77,7 +77,7 @@
       }
     },
     {
-      "model": "volleyballschool.coaches",
+      "model": "volleyballschool.Coach",
       "pk": 4,
       "fields": {
         "name": "Вербов Алексей",
@@ -86,7 +86,7 @@
       }
     },
     {
-      "model": "volleyballschool.subscriptionsamples",
+      "model": "volleyballschool.SubscriptionSample",
       "pk": 1,
       "fields": {
         "name": "Абонемент на 4 занятия",
@@ -97,7 +97,7 @@
       }
     },
     {
-      "model": "volleyballschool.subscriptionsamples",
+      "model": "volleyballschool.SubscriptionSample",
       "pk": 2,
       "fields": {
         "name": "Абонемент на 8 занятий",
@@ -115,7 +115,7 @@
       }
     },
     {
-      "model": "volleyballschool.courts",
+      "model": "volleyballschool.Court",
       "pk": 1,
       "fields": {
         "name": "Зал м.Менделеевксая",
@@ -130,7 +130,7 @@
       }
     },
     {
-      "model": "volleyballschool.courts",
+      "model": "volleyballschool.Court",
       "pk": 2,
       "fields": {
         "name": "Зал м.Авиаматорная",
@@ -145,7 +145,7 @@
       }
     },
     {
-      "model": "volleyballschool.courts",
+      "model": "volleyballschool.Court",
       "pk": 3,
       "fields": {
         "name": "Зал м.Октябрьская",
@@ -160,7 +160,7 @@
       }
     },
     {
-      "model": "volleyballschool.courts",
+      "model": "volleyballschool.Court",
       "pk": 4,
       "fields": {
         "name": "Зал м.Славянский Бульвар",
@@ -175,7 +175,7 @@
       }
     },
     {
-      "model": "volleyballschool.articles",
+      "model": "volleyballschool.Article",
       "pk": 1,
       "fields": {
         "title": "НАПАДАЮЩИЙ УДАР В ВОЛЕЙБОЛЕ",
@@ -186,7 +186,7 @@
       }
     },
     {
-      "model": "volleyballschool.articles",
+      "model": "volleyballschool.Article",
       "pk": 2,
       "fields": {
         "title": "10 самых интересных фактов о волейболе",

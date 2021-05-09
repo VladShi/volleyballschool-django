@@ -4,8 +4,8 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
-from .models import (News, Coaches, SubscriptionSamples,
-                     OneTimeTraining, Courts, Articles)
+from .models import (News, Coach, SubscriptionSample,
+                     OneTimeTraining, Court, Article)
 from .forms import RegisterUserForm
 
 
@@ -26,7 +26,7 @@ class NewsView(ListView):
 
 class CoachesView(ListView):
 
-    model = Coaches
+    model = Coach
     template_name = 'volleyballschool/coaches.html'
     context_object_name = 'coaches_list'
 
@@ -37,7 +37,7 @@ class PricesView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['subscription_samples'] = SubscriptionSamples.objects.filter(
+        context['subscription_samples'] = SubscriptionSample.objects.filter(
             active=True)
         context['one_time_training'] = OneTimeTraining.objects.first()
         return context
@@ -46,14 +46,14 @@ class PricesView(TemplateView):
 class CourtsView(ListView):
 
     template_name = 'volleyballschool/courts.html'
-    queryset = Courts.objects.filter(
+    queryset = Court.objects.filter(
         active=True).values_list('metro', flat=True)
     context_object_name = 'courts_metro_list'
 
 
 class ArticlesView(ListView):
 
-    queryset = Articles.objects.filter(active=True)
+    queryset = Article.objects.filter(active=True)
     template_name = 'volleyballschool/articles.html'
     context_object_name = 'articles_list'
     paginate_by = 5
@@ -61,7 +61,7 @@ class ArticlesView(ListView):
 
 class ArticleDetailView(DetailView):
 
-    model = Articles
+    model = Article
     context_object_name = 'article'
 
 

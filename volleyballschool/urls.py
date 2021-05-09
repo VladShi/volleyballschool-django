@@ -20,7 +20,7 @@ from .views import (IndexView, NewsView, CoachesView, PricesView,
 urlpatterns = [
     path('', IndexView.as_view(), name='index_page'),
     path('news/', NewsView.as_view(), name='news'),
-    path('coaches/', CoachesView.as_view(), name='coaches'),
+    path('Coaches/', CoachesView.as_view(), name='coaches'),
     path('prices/', PricesView.as_view(), name='prices'),
     path('courts/', CourtsView.as_view(), name='courts'),
     path('articles/', ArticlesView.as_view(), name='articles'),

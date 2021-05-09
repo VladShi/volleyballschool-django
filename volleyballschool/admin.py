@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import (User, News, Coaches, SubscriptionSamples,
-                     OneTimeTraining, Courts, Articles)
+from .models import (User, News, Coach, SubscriptionSample,
+                     OneTimeTraining, Court, Article, Timetable)
 
 
 admin.site.register(User, UserAdmin)
@@ -14,8 +14,8 @@ class NewsAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'date',)
 
 
-@admin.register(Coaches)
-class CoachesAdmin(admin.ModelAdmin):
+@admin.register(Coach)
+class CoachAdmin(admin.ModelAdmin):
     pass
 
 
@@ -28,8 +28,8 @@ class OneTimeTrainingAdmin(admin.ModelAdmin):
         return super().has_add_permission(request)
 
 
-@admin.register(SubscriptionSamples)
-class SubscriptionSamplesAdmin(admin.ModelAdmin):
+@admin.register(SubscriptionSample)
+class SubscriptionSampleAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'amount', 'trainings_qty', 'active',)
     list_filter = ('active',)
@@ -38,13 +38,14 @@ class SubscriptionSamplesAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields["name"].help_text = 'например, Абонемент на 4 занятия'
         form.base_fields["validity"].help_text = (
-            'отсчитывается со дня посещения первой тренировки')
+            'отсчитывается со дня посещения первой тренировки'
+        )
         form.base_fields["active"].initial = True
         return form
 
 
-@admin.register(Courts)
-class CourtsAdmin(admin.ModelAdmin):
+@admin.register(Court)
+class CourtAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'active',)
     list_filter = ('active',)
@@ -52,13 +53,14 @@ class CourtsAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields["name"].help_text = (
-            'например, Зал на ст.м.Октябрьская')
+            'например, Зал на ст.м.Октябрьская'
+        )
         form.base_fields["active"].initial = True
         return form
 
 
-@admin.register(Articles)
-class ArticlesAdmin(admin.ModelAdmin):
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'active',)
     prepopulated_fields = {"slug": ("title",)}
@@ -66,8 +68,21 @@ class ArticlesAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields["title"].help_text = (
-            'максимум 180 символов')
+            'максимум 180 символов'
+        )
         form.base_fields["short_description"].help_text = (
-            'текст будет отображен в списке статей, максимум 400 символов')
+            'текст будет отображен в списке статей, максимум 400 символов'
+        )
         form.base_fields["active"].initial = True
         return form
+
+
+@admin.register(Timetable)
+class TimetableAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'court', 'skill_level', 'day_of_week', 'coach', 'start_time'
+    )
+    list_display_links = list_display
+    list_filter = ('court', 'skill_level', 'day_of_week', 'coach')
+    ordering = ['court', 'skill_level']

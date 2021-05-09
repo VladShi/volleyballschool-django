@@ -8,20 +8,33 @@ class User(AbstractUser):
 
     patronymic = models.CharField('Отчество', max_length=150, blank=True)
     balance = models.DecimalField(
-        'Баланс', max_digits=9, decimal_places=2, default=0)
+        verbose_name='Баланс',
+        max_digits=9,
+        decimal_places=2,
+        default=0,
+    )
     passport_number = models.CharField(
-        'Номер паспорта', max_length=15, blank=True)
+        verbose_name='Номер паспорта',
+        max_length=15,
+        blank=True,
+    )
     passport_data = models.CharField(
-        'Паспортные данные', max_length=195, blank=True)
+        verbose_name='Паспортные данные',
+        max_length=195,
+        blank=True,
+    )
 
 
 class News(models.Model):
 
     title = models.CharField('Заголовок', max_length=120)
+    date = models.DateField('Дата', auto_now_add=True)
     text = models.TextField('Текст', blank=True)
     image = models.ImageField(
-        'Изображение', upload_to='news_images/', blank=True)
-    date = models.DateField('Дата', auto_now_add=True)
+        verbose_name='Изображение',
+        upload_to='news_images/',
+        blank=True,
+    )
 
     def __str__(self):
         return self.title[:30] + '...'
@@ -32,12 +45,15 @@ class News(models.Model):
         verbose_name_plural = 'Новости'
 
 
-class Coaches(models.Model):
+class Coach(models.Model):
 
     name = models.CharField('Имя', max_length=100)
     description = models.TextField('Описание')
     photo = models.ImageField(
-        'Фото', upload_to='photos_of_coaches/', blank=True)
+        verbose_name='Фото',
+        upload_to='photos_of_coaches/',
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
@@ -47,8 +63,8 @@ class Coaches(models.Model):
         verbose_name_plural = 'Тренеры'
 
 
-class SubscriptionSamples(models.Model):
-    """Шаблоны Абонементов"""
+class SubscriptionSample(models.Model):
+    """Шаблон Абонемента"""
 
     name = models.CharField('Наименование', max_length=80)
     amount = models.PositiveIntegerField('Стоимость(руб.)')
@@ -64,7 +80,7 @@ class SubscriptionSamples(models.Model):
         try:
             return int(self.amount / self.trainings_qty)
         except ZeroDivisionError:
-            return "укажите кол-во тренировок по абонементу"
+            return "укажите кол-во тренировок по данному абонементу"
 
     class Meta:
         verbose_name = 'Абонемент'
@@ -72,8 +88,9 @@ class SubscriptionSamples(models.Model):
 
 
 class OneTimeTraining(models.Model):
-    """В таблице должна находиться только единственная запись с ценной за одну
-    тренировку. В админке отключаем возможность добавления больше одной записи
+    """В таблице должна находиться только единственная запись с ценной
+    за разовое занятие. В админке отключаем возможность добавления
+    больше одной записи в модель.
     """
 
     price = models.PositiveSmallIntegerField('Цена(руб.)')
@@ -86,21 +103,34 @@ class OneTimeTraining(models.Model):
         verbose_name_plural = 'Стоимость разового занятия'
 
 
-class Courts(models.Model):
+class Court(models.Model):
     """Волейбольные залы"""
 
-    name = models.CharField('Имя', max_length=120)
+    name = models.CharField('Наименование', max_length=120)
     description = models.TextField('Описание', blank=True)
-    photo = models.ImageField(
-        'Фото', upload_to='photos_of_courts/', blank=True)
     address = models.CharField('Адрес', max_length=120)
     metro = models.CharField('Станция метро', max_length=50)
+    photo = models.ImageField(
+        verbose_name='Фото',
+        upload_to='photos_of_courts/',
+        blank=True,
+    )
     longitude = models.DecimalField(
-        'Долгота', max_digits=9, decimal_places=6, blank=True, null=True)
+        verbose_name='Долгота',
+        max_digits=9,
+        decimal_places=6,
+        blank=True,
+        null=True,
+    )
     latitude = models.DecimalField(
-        'Широта', max_digits=9, decimal_places=6, blank=True, null=True)
-    active = models.BooleanField('Активный')
+        verbose_name='Широта',
+        max_digits=9,
+        decimal_places=6,
+        blank=True,
+        null=True,
+    )
     passport_required = models.BooleanField('Требуется паспорт')
+    active = models.BooleanField('Активный')
 
     def __str__(self):
         return self.name
@@ -110,18 +140,24 @@ class Courts(models.Model):
         verbose_name_plural = 'Залы'
 
 
-class Articles(models.Model):
+class Article(models.Model):
 
     title = models.CharField('Заголовок', max_length=180)
-    slug = models.SlugField('Slug( URL )', max_length=200,
-                            unique=True, db_index=True)
+    slug = models.SlugField(
+        verbose_name='Slug( URL )',
+        max_length=200,
+        unique=True,
+        db_index=True,
+    )
     short_description = models.TextField(
-        'Краткое описание статьи', max_length=400)
+        verbose_name='Краткое описание статьи',
+        max_length=400,
+    )
     text = RichTextUploadingField('Текст')
     active = models.BooleanField('Активна')
 
     def __str__(self):
-        return self.title
+        return self.title[:40] + '...'
 
     def get_absolute_url(self):
         from django.urls import reverse
@@ -130,3 +166,53 @@ class Articles(models.Model):
     class Meta:
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
+
+
+class Timetable(models.Model):
+
+    class DaysOfTheWeek(models.TextChoices):
+        MONDAY = 'Mon', 'Понедельник'
+        TUESDAY = 'Tue', 'Вторник'
+        WEDNESDAY = 'Wed', 'Среда'
+        THURSDAY = 'Thu', 'Четверг'
+        FRIDAY = 'Fri', 'Пятница'
+        SATURDAY = 'Sat', 'Суббота'
+        SUNDAY = 'Sun', 'Воскресенье'
+
+    class SkillLevels(models.IntegerChoices):
+        BEGGINER = 1, 'начальный уровень'
+        BEGGINER_PLUS = 2, 'уровень начальный+'
+        MIDDLE = 3, 'средний уровень'
+
+    day_of_week = models.CharField(
+        verbose_name='день недели',
+        max_length=3,
+        choices=DaysOfTheWeek.choices,
+    )
+    skill_level = models.IntegerField(
+        verbose_name='уровень',
+        choices=SkillLevels.choices,
+    )
+    court = models.ForeignKey(
+        Court,
+        verbose_name='зал',
+        on_delete=models.CASCADE,
+        limit_choices_to={'active': True},
+    )
+    coach = models.ForeignKey(
+        Coach,
+        verbose_name='тренер',
+        on_delete=models.SET_DEFAULT,
+        default='Тренер не назначен',
+    )
+    start_time = models.TimeField('время начала')
+
+    def __str__(self):
+        return (
+            f'{self.get_skill_level_display().title()}  {self.court} \
+              {self.get_day_of_week_display()}'
+        )
+
+    class Meta:
+        verbose_name = 'Расписание'
+        verbose_name_plural = 'Расписание'
