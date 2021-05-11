@@ -13,9 +13,10 @@ Class-based views
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
-from .views import (IndexView, NewsView, CoachesView, PricesView,
-                    CourtsView, ArticlesView, ArticleDetailView, AccountView,
-                    RegisterUserView, logout_user)
+from .views import (
+    IndexView, NewsView, CoachesView, PricesView, CourtsView, ArticlesView,
+    ArticleDetailView, AccountView, RegisterUserView, logout_user
+)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index_page'),

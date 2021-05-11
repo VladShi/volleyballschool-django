@@ -4,8 +4,9 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
-from .models import (News, Coach, SubscriptionSample,
-                     OneTimeTraining, Court, Article)
+from .models import (
+    News, Coach, SubscriptionSample, OneTimeTraining, Court, Article,
+)
 from .forms import RegisterUserForm
 
 
@@ -26,7 +27,7 @@ class NewsView(ListView):
 
 class CoachesView(ListView):
 
-    model = Coach
+    queryset = Coach.objects.filter(active=True)
     template_name = 'volleyballschool/coaches.html'
     context_object_name = 'coaches_list'
 

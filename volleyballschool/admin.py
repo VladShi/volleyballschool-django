@@ -1,8 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import (User, News, Coach, SubscriptionSample,
-                     OneTimeTraining, Court, Article, Timetable)
+from .models import (
+    User, News, Coach, SubscriptionSample, OneTimeTraining, Court, Article,
+    Timetable, Training,
+)
 
 
 admin.site.register(User, UserAdmin)
@@ -16,7 +18,11 @@ class NewsAdmin(admin.ModelAdmin):
 
 @admin.register(Coach)
 class CoachAdmin(admin.ModelAdmin):
-    pass
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["active"].initial = True
+        return form
 
 
 @admin.register(OneTimeTraining)
@@ -81,8 +87,29 @@ class ArticleAdmin(admin.ModelAdmin):
 class TimetableAdmin(admin.ModelAdmin):
 
     list_display = (
-        'court', 'skill_level', 'day_of_week', 'coach', 'start_time'
+        'court', 'skill_level', 'day_of_week', 'coach', 'start_time',
     )
     list_display_links = list_display
     list_filter = ('court', 'skill_level', 'day_of_week', 'coach')
     ordering = ['court', 'skill_level']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["active"].initial = True
+        return form
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+
+@admin.register(Training)
+class TrainingAdmin(admin.ModelAdmin):
+    list_display = (
+        'date', 'court', 'skill_level', 'day_of_week', 'start_time',
+    )
+    list_display_links = list_display
+    list_filter = ('court', 'skill_level', 'day_of_week', 'coach')
+    ordering = ['date', 'court', 'skill_level']
