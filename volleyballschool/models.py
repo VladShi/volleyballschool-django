@@ -325,7 +325,7 @@ class Training(TimetableSample):
         )
 
     def clean(self):
-        if self.day_of_week != self.date.isoweekday:
+        if self.day_of_week != self.date.isoweekday():
             raise ValidationError({
                 'day_of_week': ValidationError(
                     ('Дата и день недели не соответствуют'), code='invalid'
