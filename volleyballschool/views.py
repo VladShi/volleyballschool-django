@@ -1,3 +1,5 @@
+import datetime
+
 from django.views.generic import ListView, TemplateView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
@@ -5,9 +7,12 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
 from .models import (
-    News, Coach, SubscriptionSample, OneTimeTraining, Court, Article,
+    News, Coach, SubscriptionSample, OneTimeTraining, Court, Article, Training,
 )
 from .forms import RegisterUserForm
+from volleyballschool.utils import (
+    get_start_date_and_end_date, transform_for_timetable
+)
 
 
 class IndexView(ListView):
@@ -64,6 +69,40 @@ class ArticleDetailView(DetailView):
 
     model = Article
     context_object_name = 'article'
+
+
+class TimetableView(ListView):
+
+    template_name = 'volleyballschool/timetable.html'
+    context_object_name = 'trainings'
+
+    def get_queryset(self):
+        number_of_weeks = 2
+        start_date, end_date = get_start_date_and_end_date(number_of_weeks)
+        query_set = Training.objects.filter(
+            skill_level=int(self.kwargs['skill_level']),
+            date__gte=start_date,
+            date__lte=end_date,
+            active=True,
+        )
+        transformed_query_set = transform_for_timetable(
+            query_set=query_set,
+            start_date=start_date,
+            number_of_weeks=number_of_weeks,
+        )
+        return transformed_query_set
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        skill_level_selector = int(self.kwargs['skill_level'])
+        skill_levels_list = {
+            1: 'для начального уровня',
+            2: 'для уровня начальный+',
+            3: 'для среднего уровня',
+        }
+        context['skill_level'] = skill_levels_list[skill_level_selector]
+        context['today'] = datetime.date.today()
+        return context
 
 
 class AccountView(LoginRequiredMixin, TemplateView):

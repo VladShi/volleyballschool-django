@@ -152,7 +152,13 @@
                 </div>
 
                 <nav class="nav">
-                    <a class="nav__link" href="timetable.html">Расписание</a>
+                    <div id="timetable"><span class="nav__link nav__link_pointer">Расписание</span>
+                        <div class="nav__sub-menu">
+                            <a class="nav__sub-menu_link" href="{% url 'timetable' '1' %}">начальный уровень</a><hr>
+                            <a class="nav__sub-menu_link" href="{% url 'timetable' '2' %}">начальный уровень+</a><hr>
+                            <a class="nav__sub-menu_link" href="{% url 'timetable' '3' %}">начальный уровень++</a><hr>
+                        </div>
+                    </div>
                     <a class="nav__link" href="{% url 'prices' %}">Цены</a>
                     <a class="nav__link" href="{% url 'courts' %}">Залы</a>
                     <a class="nav__link" href="{% url 'coaches' %}">Tренеры</a>
@@ -249,9 +255,9 @@
                     <h4 class="footer__header">Услуги</h4>
 
                     <nav>
-                        <a class="footer__link" href="#">Расположение залов</a><br>
-                        <a class="footer__link" href="#">Цены на тренировки</a><br>
-                        <a class="footer__link" href="#">Статьи о волейболе</a><br>
+                        <a class="footer__link" href="{% url 'courts' %}">Расположение залов</a><br>
+                        <a class="footer__link" href="{% url 'prices' %}">Цены на тренировки</a><br>
+                        <a class="footer__link" href="{% url 'articles' %}">Статьи о волейболе</a><br>
                     </nav>
 
                 </div>
@@ -259,9 +265,9 @@
                 <div class="footer__block">
                     <h4 class="footer__header">Расписание</h4>
                     <nav>
-                        <a class="footer__link" href="#">Классический волейбол, начальный уровень</a><br>
-                        <a class="footer__link" href="#">Классический волейбол, уровень начальный+</a><br>
-                        <a class="footer__link" href="#">Классический волейбол, средний уровень</a><br>
+                        <a class="footer__link" href="{% url 'timetable' '1' %}">Классический волейбол, начальный уровень</a><br>
+                        <a class="footer__link" href="{% url 'timetable' '2' %}">Классический волейбол, уровень начальный+</a><br>
+                        <a class="footer__link" href="{% url 'timetable' '3' %}">Классический волейбол, средний уровень</a><br>
                     </nav>
                 </div>
 
@@ -315,6 +321,10 @@
             </div>
         </div>
     </div>
+
+{% block javascript %}
+<script src="{% static 'volleyballschool/js/script.js' %}"></script>
+{% endblock %}
 
 </body>
 

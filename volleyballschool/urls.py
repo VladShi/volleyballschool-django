@@ -10,12 +10,13 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 """
-from django.urls import path
+from django.urls import path, re_path
 from django.contrib.auth import views as auth_views
 
 from .views import (
     IndexView, NewsView, CoachesView, PricesView, CourtsView, ArticlesView,
-    ArticleDetailView, AccountView, RegisterUserView, logout_user
+    ArticleDetailView, AccountView, RegisterUserView, TimetableView,
+    logout_user,
 )
 
 urlpatterns = [
@@ -29,6 +30,11 @@ urlpatterns = [
         'articles/<slug:slug>/',
         ArticleDetailView.as_view(),
         name='article-detail',
+    ),
+    re_path(
+        r'^timetable/(?P<skill_level>[1-3]{1})/$',
+        TimetableView.as_view(),
+        name='timetable'
     ),
     path('account/', AccountView.as_view(), name='account'),
     path(

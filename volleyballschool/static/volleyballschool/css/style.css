@@ -153,6 +153,43 @@ body {
     text-shadow: 0px 0px 7px rgb(197, 239, 255), 0px 0px 8px rgba(20, 22, 129, 0.6);
 }
 
+.nav__link_pointer {
+    cursor: pointer;
+}
+
+.nav__sub-menu {
+    position: absolute;
+    height: 0; 
+    overflow: hidden; 
+    opacity: 0;
+    transition: all .3s ease-out;
+    position: absolute;
+    width: 240px;
+    background: rgba(248, 248, 248, 0.9);
+    line-height: 1.5;
+    padding-left: 9px;
+    padding-top: 7px;
+    /* border: 1px solid rgba(175, 175, 175, 0.952); */
+    /* outline: 2px solid rgba(248, 248, 248, 0.85); */
+}
+
+.nav__sub-menu hr {
+    border: 0;
+    height: 1px;
+    background: #000;
+    background-image: -webkit-linear-gradient(left, #fff, #000, #fff);
+    background-image: -moz-linear-gradient(left, #fff, #000, #fff);
+    background-image: -ms-linear-gradient(left, #fff, #000, #fff);
+    background-image: -o-linear-gradient(left, #fff, #000, #fff);
+}
+
+.nav__sub-menu_link {
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #293872;
+    font-size: 16px;
+}
+
 
 /* Content
 ===================================== */
@@ -331,6 +368,61 @@ body {
 .content__register-form button {
     margin-left: 224px;
 }
+
+.content__block-timetable {
+    width: 100%;
+    padding: 10px 0px;
+    font-size: 14px;
+}
+
+.content__timetable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.content__timetable td, th {
+    border: 1px solid rgb(55, 55, 77);
+    padding: 4px 3px;
+    text-align: center;
+    vertical-align: top;
+    width: 14.2857%;
+}
+
+.content__timetable td {
+    height: 200px;
+}
+
+.content__timetable-bold16 {
+    font-size: 16px; 
+    font-weight: 700; 
+    line-height: 1.6;
+}
+
+.content__timetable-status {
+    font-size: 16px;
+    font-weight: 700; 
+    line-height: 1.6;
+    color:rgb(216, 41, 41);
+    text-decoration: underline;
+}
+
+.content__timetable-date { 
+    display: block;
+    content: "";
+    height: 30px;
+    margin-top: -23px;
+    border-style: solid;
+    border-color: rgb(28, 19, 104);
+    border-width: 0 0 1px 0;
+    border-radius: 20px;
+}
+
+.content__timetable-date_today {
+    border-color: rgb(221, 43, 43);
+    border-width: 0 0 3px 0;
+    margin-top: -20px;
+}
+
 
 /* Footer
 ===================================== */

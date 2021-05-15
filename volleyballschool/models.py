@@ -3,7 +3,6 @@ import datetime
 from ckeditor_uploader.fields import RichTextUploadingField
 
 from django.db import models
-from django.db.models import Q
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
@@ -85,12 +84,21 @@ class SubscriptionSample(models.Model):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        if self.trainings_qty == 0:
+            raise ValidationError({
+                'trainings_qty': ValidationError(
+                    ('количество тренировок не должно быть равным нулю'),
+                    code='invalid'
+                ),
+            })
+
     @property
     def price_for_one_training(self):
         try:
             return int(self.amount / self.trainings_qty)
         except ZeroDivisionError:
-            return "укажите кол-во тренировок по данному абонементу"
+            return "количество тренировок не должно быть равным нулю"
 
 
 class OneTimeTraining(models.Model):
@@ -251,11 +259,11 @@ class Timetable(TimetableSample):
     def save(self, *args, **kwargs):
         if self.id:  # если расписание уже создано ранее
             matching_trainings = Training.objects.filter(
-                Q(date__gte=datetime.date.today()),
-                Q(skill_level=self.skill_level),
-                Q(court=self.court),
-                Q(day_of_week=self.day_of_week),
-                Q(status=1),
+                date__gte=datetime.date.today(),
+                skill_level=self.skill_level,
+                court=self.court,
+                day_of_week=self.day_of_week,
+                status=1,
             )
             if self.active is True and matching_trainings:
                 for training in matching_trainings:
@@ -272,10 +280,10 @@ class Timetable(TimetableSample):
 
     def delete(self, *args, **kwargs):
         matching_trainings = Training.objects.filter(
-                Q(date__gte=datetime.date.today()),
-                Q(skill_level=self.skill_level),
-                Q(court=self.court),
-                Q(day_of_week=self.day_of_week),
+                date__gte=datetime.date.today(),
+                skill_level=self.skill_level,
+                court=self.court,
+                day_of_week=self.day_of_week,
             )
         if matching_trainings:
             matching_trainings.delete()

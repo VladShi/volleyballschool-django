@@ -1,0 +1,80 @@
+{% extends "./index.html" %}
+{% load static %}
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header">
+                <h1>Расписание {{ skill_level }}</h1>
+            </div>
+
+            {% for court in trainings %}
+            <div class="content__block-timetable">
+
+                <table class="content__timetable">
+                    <thead>
+                        <th colspan="7" class="content__timetable-bold16">{{court.name}}</th>
+                        <tr>
+                            <th>Понедельник</th>
+                            <th>Вторник</th>
+                            <th>Среда</th>
+                            <th>Четверг</th>
+                            <th>Пятница</th>
+                            <th>Суббота</th>
+                            <th>Воскресенье</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for week in court.weeks %}
+                        <tr>
+                            {% for day in week %}
+                            <td>
+                                {{ day.date|date:"d M" }}
+                                {% if day.date == today %}
+                                    <hr class='content__timetable-date content__timetable-date_today'>
+                                {% else %}
+                                    <hr class='content__timetable-date'>
+                                {% endif %}
+                                
+                                {% if day.start_time %}
+
+                                    {% if day.coach != None %}
+                                        {% if day.coach.photo %}
+                                            <img class="content__img" src="{{ day.coach.photo.url }}">
+                                        {% else %}
+                                            <img class="content__img" src="{% static 'volleyballschool/images/coach-photo_default.jpg' %}">
+                                        {% endif %}
+                                        {{ day.coach }}<br>
+                                    {% else %}
+                                        <img class="content__img" src="{% static 'volleyballschool/images/coach-photo_default.jpg' %}">
+                                        Тренер не назначен
+                                    {% endif %}
+
+                                    {% if day.status != 1 %} <!-- status 1 = OK -->
+                                    <span class="content__timetable-status">{{ day.get_status_display }}</span><br>
+                                    {% endif %}
+
+                                    <span class="content__timetable-bold16">{{ day.start_time }}</span>
+
+                                    {% if day.date >= today and day.status != 4 %} <!-- status 4 = Отменена -->
+                                    <a class="btn" href="#">Записаться</a>
+                                    {% endif %}
+                                
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+            
+        </div><!-- /.content__inner-->
+    </div><!-- /.container-->
+</div><!-- /.content-->
+{% endblock %}
