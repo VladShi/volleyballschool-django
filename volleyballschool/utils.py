@@ -118,13 +118,21 @@ def transform_for_timetable(query_set, start_date, number_of_weeks):
                 start_date + datetime.timedelta(n) for n
                 in range(7*week_number, 7*(week_number+1))
             ):
-                if query_set.filter(date=date, court=court).exists():
-                    trainigs_for_court['weeks'][week_number].append(
-                        query_set.filter(date=date, court=court).first()
-                    )
-                else:
+                # if query_set.filter(date=date, court=court).exists():
+                # при использовании строчки выше, каждую итерацию происходит
+                # запрос к базе и в итоге выходит 60 запросов к бд и секунда на
+                # загрузку страницы. Непонятно почему
+                flag = True
+                for query in query_set:
+                    if query.date == date and query.court == court:
+                        trainigs_for_court['weeks'][week_number].append(
+                            query
+                        )
+                        flag = False
+                        break
+                if flag:
                     trainigs_for_court['weeks'][week_number].append(
                         {'date': date}
-                    )
+                            )
         transformed_query_set.append(trainigs_for_court)
     return transformed_query_set

@@ -79,7 +79,7 @@ class TimetableView(ListView):
     def get_queryset(self):
         number_of_weeks = 2
         start_date, end_date = get_start_date_and_end_date(number_of_weeks)
-        query_set = Training.objects.filter(
+        query_set = Training.objects.select_related('court', 'coach').filter(
             skill_level=int(self.kwargs['skill_level']),
             date__gte=start_date,
             date__lte=end_date,
