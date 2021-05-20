@@ -1,6 +1,8 @@
 import datetime
 
-from django.views.generic import ListView, TemplateView, DetailView, CreateView
+from django.views.generic import (
+    ListView, TemplateView, DetailView, CreateView, View
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
 from django.shortcuts import redirect
@@ -11,7 +13,7 @@ from .models import (
 )
 from .forms import RegisterUserForm
 from volleyballschool.utils import (
-    get_start_date_and_end_date, transform_for_timetable
+    get_start_date_and_end_date, transform_for_timetable,
 )
 
 
@@ -102,7 +104,44 @@ class TimetableView(ListView):
         }
         context['skill_level'] = skill_levels_list[skill_level_selector]
         context['today'] = datetime.date.today()
+        context['time_now_minus_two_hours'] = (
+            (datetime.datetime.now() - datetime.timedelta(hours=2)).time()
+        )
         return context
+
+
+class RegistrationForTrainingView(DetailView):
+
+    template_name = 'volleyballschool/registration-for-training.html'
+    context_object_name = 'training'
+
+    def get_object(self):
+        training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
+        return training
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user in self.object.learners.all():
+            context['already_registered'] = True
+        return context
+
+
+class ConfirmRegistrationForTrainingView(View):
+
+    def get(self, request, *args, **kwargs):
+        training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
+        if training.get_free_places() > 0:
+            training.learners.add(request.user)
+        return redirect('registration-for-training', self.kwargs['pk'])
+
+
+class CancelRegistrationForTrainingView(View):
+
+    def get(self, request, *args, **kwargs):
+        training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
+        if self.request.user in training.learners.all():
+            training.learners.remove(request.user)
+        return redirect('registration-for-training', self.kwargs['pk'])
 
 
 class AccountView(LoginRequiredMixin, TemplateView):

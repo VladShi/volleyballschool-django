@@ -1,0 +1,57 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+
+            <div class="content__header">
+                <h1>Запись на тренировку</h1>
+                <h2>Подтвердите запись на тренировку:</h2>
+            </div>
+
+            <div class="content__training-block">
+                <table class="content__training-table">
+                    <tr>
+                        <td><i>Дата:</i></td>
+                        <td>{{ training.date }}, {{ training.get_day_of_week_display }}</td>
+                    </tr>
+                    <tr>
+                        <td><i>Время:</i></td>
+                        <td>{{ training.start_time }}</td>
+                    </tr>
+                    <tr>
+                        <td><i>Зал:</i><br><i>Адрес зала:</i></td>
+                        <td>
+                            <b>{{ training.court.name }}</b><br>
+                            {{ training.court.address }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><i>Уровень:</i></td>
+                        <td>{{ training.get_skill_level_display|capfirst }}</td>
+                    </tr>
+                    <tr>
+                        <td><i>Свободных мест:</i></td>
+                        <td>{{ training.get_free_places }}/16 </td>
+                    </tr>
+                </table>
+                {% if already_registered %}
+                    <p class="content__training-msg">Вы записаны на тренировку<br></p>
+                    <p class="content__training-btn">
+                        <a class="btn" href="{% url 'cancel-registration-for-training' training.pk %}">Отменить</a>
+                    </p>
+                {% elif training.get_free_places > 0 %}
+                    <p><br></p>
+                    <p class="content__training-btn">
+                        <a class="btn" href="{% url 'confirm-registration-for-training' training.pk %}">Подтвердить</a>
+                    </p>
+                {% else %}
+                    <p><br></p>
+                    <p class="content__training-msg">Свободных мест нет</p>
+                {% endif %}
+            </div>
+
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}

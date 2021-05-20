@@ -1,5 +1,7 @@
 import datetime
 from django.core.exceptions import ValidationError
+from django.http import Http404
+from django.db.models import Q
 
 
 def create_trainings_based_on_timeteble_for_x_days(donor, cls_acceptor, days):
@@ -64,7 +66,7 @@ def copy_same_fields(donor, acceptor):
 
 def get_start_date_and_end_date(number_of_weeks):
     """Return the current week Monday date as start_date. And return Sunday
-    date of current+[number_of_week] week as end_date.
+    date of current+[number_of_weeks] week as end_date.
 
     Args:
         number_of_weeks ([int]): Number of weeks to display in the timetable
@@ -118,21 +120,49 @@ def transform_for_timetable(query_set, start_date, number_of_weeks):
                 start_date + datetime.timedelta(n) for n
                 in range(7*week_number, 7*(week_number+1))
             ):
-                # if query_set.filter(date=date, court=court).exists():
-                # при использовании строчки выше, каждую итерацию происходит
-                # запрос к базе и в итоге выходит 60 запросов к бд и секунда на
-                # загрузку страницы. Непонятно почему
-                flag = True
                 for query in query_set:
                     if query.date == date and query.court == court:
                         trainigs_for_court['weeks'][week_number].append(
                             query
                         )
-                        flag = False
                         break
-                if flag:
+                else:
                     trainigs_for_court['weeks'][week_number].append(
                         {'date': date}
                             )
         transformed_query_set.append(trainigs_for_court)
     return transformed_query_set
+
+
+def get_upcoming_training_or_404(model, pk):
+    """Return a training object by pk if training end date and time later than
+    current time, else raises Http404.
+    Including select_related for field 'court' and prefetch_related for field
+    'learners'.
+
+    Raises:
+        Http404
+
+    Returns:
+        [object]: the model object
+    """
+    try:
+        time_now_minus_two_hours = (
+            (datetime.datetime.now() - datetime.timedelta(hours=2)).time()
+        )
+        training = model.objects.select_related(
+            'court'
+        ).prefetch_related(
+            'learners'
+        ).filter(
+            Q(date__gt=datetime.date.today()) |
+            Q(
+                date=datetime.date.today(),
+                start_time__gt=time_now_minus_two_hours
+            )
+        ).get(
+            pk=pk
+        )
+    except model.DoesNotExist:
+        raise Http404()
+    return training

@@ -112,4 +112,4 @@ class TrainingAdmin(admin.ModelAdmin):
     )
     list_display_links = list_display
     list_filter = ('court', 'skill_level', 'day_of_week', 'coach')
-    ordering = ['date', 'court', 'skill_level']
+    ordering = ['-date', 'court', 'skill_level']

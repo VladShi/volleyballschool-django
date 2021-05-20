@@ -16,7 +16,8 @@ from django.contrib.auth import views as auth_views
 from .views import (
     IndexView, NewsView, CoachesView, PricesView, CourtsView, ArticlesView,
     ArticleDetailView, AccountView, RegisterUserView, TimetableView,
-    logout_user,
+    logout_user, RegistrationForTrainingView,
+    ConfirmRegistrationForTrainingView, CancelRegistrationForTrainingView,
 )
 
 urlpatterns = [
@@ -35,6 +36,21 @@ urlpatterns = [
         r'^timetable/(?P<skill_level>[1-3]{1})/$',
         TimetableView.as_view(),
         name='timetable'
+    ),
+    path(
+        'registration-for-training/<int:pk>/',
+        RegistrationForTrainingView.as_view(),
+        name='registration-for-training',
+    ),
+    path(
+        'confirm-registration-for-training/<int:pk>/',
+        ConfirmRegistrationForTrainingView.as_view(),
+        name='confirm-registration-for-training',
+    ),
+    path(
+        'cancel-registration-for-training/<int:pk>/',
+        CancelRegistrationForTrainingView.as_view(),
+        name='cancel-registration-for-training',
     ),
     path('account/', AccountView.as_view(), name='account'),
     path(

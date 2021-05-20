@@ -59,8 +59,8 @@
 
                                     <span class="content__timetable-bold16">{{ day.start_time }}</span>
 
-                                    {% if day.date >= today and day.status != 4 %} <!-- status 4 = Отменена -->
-                                    <a class="btn" href="#">Записаться</a>
+                                    {% if day.date > today and day.status != 4 or day.date == today and day.start_time > time_now_minus_two_hours and day.status != 4%} <!-- status 4 = Отменена -->
+                                    <a class="btn" href="{% url 'registration-for-training' day.pk %}">Записаться</a>
                                     {% endif %}
                                 
                                 {% endif %}

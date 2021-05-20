@@ -255,6 +255,10 @@ body {
     box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, .3);
 }
 
+
+/* Content news
+===================================== */
+
 .content__newslist {
     list-style:none;
     margin-left: 0px;
@@ -292,12 +296,20 @@ body {
     box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, .3);
 }
 
+
+/* Content courts
+===================================== */
+
 .content__courts-list li {
     display: block;
     width: 33%;
     float: left;
     line-height: 1.5;
 }
+
+
+/* Content login
+===================================== */
 
 .content__login-form {
     padding-top: 150px;
@@ -337,6 +349,10 @@ body {
     text-shadow: 1px 1px 1px rgb(145, 224, 255), 2px 2px 2px rgba(0,0,0,0.4);
 }
 
+
+/* Content register
+===================================== */
+
 .content__register-form {
     padding-top: 30px;
     padding-bottom: 40px;
@@ -368,6 +384,10 @@ body {
 .content__register-form button {
     margin-left: 224px;
 }
+
+
+/* Content timetable
+===================================== */
 
 .content__block-timetable {
     width: 100%;
@@ -421,6 +441,47 @@ body {
     border-color: rgb(221, 43, 43);
     border-width: 0 0 3px 0;
     margin-top: -20px;
+}
+
+
+/* Content training
+===================================== */
+
+.content__training-block {
+    display: block;
+    width: 45%;
+    margin: 10px auto 10px ;
+    text-align: center;
+    font-size: 20px;
+    line-height: 1.7;
+}
+
+.content__training-btn {
+    text-align: center;
+    font-size: 16px;
+    margin-top: 30px;
+}
+
+.content__training-msg {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: rgb(199, 11, 49);
+}
+
+.content__training-table {
+    margin: 60px auto 30px;
+}
+
+.content__training-table td {
+    padding: 7px 7px;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.content__training-table tr td:first-child {
+    text-align: right;
+    color:#6b6b6b;
 }
 
 

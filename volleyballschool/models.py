@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 
 from .utils import (
     create_trainings_based_on_timeteble_for_x_days, copy_same_fields,
+    get_upcoming_training_or_404
 )
 
 
@@ -93,8 +94,7 @@ class SubscriptionSample(models.Model):
                 ),
             })
 
-    @property
-    def price_for_one_training(self):
+    def get_price_for_one_training(self):
         try:
             return int(self.amount / self.trainings_qty)
         except ZeroDivisionError:
@@ -252,10 +252,6 @@ class Timetable(TimetableSample):
             )
         )
 
-    def create_trainings(self):
-        if self.active is True:
-            create_trainings_based_on_timeteble_for_x_days(self, Training, 15)
-
     def save(self, *args, **kwargs):
         if self.id:  # если расписание уже создано ранее
             matching_trainings = Training.objects.filter(
@@ -291,8 +287,14 @@ class Timetable(TimetableSample):
         else:
             super().delete(*args, **kwargs)
 
+    def create_trainings(self):
+        if self.active is True:
+            create_trainings_based_on_timeteble_for_x_days(self, Training, 15)
+
 
 class Training(TimetableSample):
+
+    MAX_LEARNERS_PER_TRAINING = 16
 
     class ListOfStatuses(models.IntegerChoices):
         OK = 1, 'OK'
@@ -342,3 +344,11 @@ class Training(TimetableSample):
                     ('Дата и день недели не соответствуют'), code='invalid'
                 ),
             })
+
+    def get_free_places(self):
+        free_places = self.MAX_LEARNERS_PER_TRAINING - self.learners.count()
+        return free_places
+
+    @classmethod
+    def get_upcoming_training_or_404(cls, pk):
+        return get_upcoming_training_or_404(cls, pk)
