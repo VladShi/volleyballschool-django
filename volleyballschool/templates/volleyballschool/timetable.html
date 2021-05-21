@@ -33,7 +33,7 @@
                             {% for day in week %}
                             <td>
                                 {{ day.date|date:"d M" }}
-                                {% if day.date == today %}
+                                {% if day.date == datetime_now.date %}
                                     <hr class='content__timetable-date content__timetable-date_today'>
                                 {% else %}
                                     <hr class='content__timetable-date'>
@@ -58,8 +58,7 @@
                                     {% endif %}
 
                                     <span class="content__timetable-bold16">{{ day.start_time }}</span>
-
-                                    {% if day.date > today and day.status != 4 or day.date == today and day.start_time > time_now_minus_two_hours and day.status != 4%} <!-- status 4 = Отменена -->
+                                    {% if datetime_now < day.get_end_datetime and day.status != 4%} <!-- status 4 = Отменена -->
                                     <a class="btn" href="{% url 'registration-for-training' day.pk %}">Записаться</a>
                                     {% endif %}
                                 

@@ -103,10 +103,7 @@ class TimetableView(ListView):
             3: 'для среднего уровня',
         }
         context['skill_level'] = skill_levels_list[skill_level_selector]
-        context['today'] = datetime.date.today()
-        context['time_now_minus_two_hours'] = (
-            (datetime.datetime.now() - datetime.timedelta(hours=2)).time()
-        )
+        context['datetime_now'] = datetime.datetime.now()
         return context
 
 

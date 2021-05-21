@@ -1,7 +1,6 @@
 import datetime
 from django.core.exceptions import ValidationError
 from django.http import Http404
-from django.db.models import Q
 
 
 def create_trainings_based_on_timeteble_for_x_days(donor, cls_acceptor, days):
@@ -135,8 +134,8 @@ def transform_for_timetable(query_set, start_date, number_of_weeks):
 
 
 def get_upcoming_training_or_404(model, pk):
-    """Return a training object by pk if training end date and time later than
-    current time, else raises Http404.
+    """Return a training object by pk if training has not finished, else raise
+    Http404.
     Including select_related for field 'court' and prefetch_related for field
     'learners'.
 
@@ -147,22 +146,15 @@ def get_upcoming_training_or_404(model, pk):
         [object]: the model object
     """
     try:
-        time_now_minus_two_hours = (
-            (datetime.datetime.now() - datetime.timedelta(hours=2)).time()
-        )
         training = model.objects.select_related(
             'court'
         ).prefetch_related(
             'learners'
         ).filter(
-            Q(date__gt=datetime.date.today()) |
-            Q(
-                date=datetime.date.today(),
-                start_time__gt=time_now_minus_two_hours
-            )
-        ).get(
-            pk=pk
-        )
+            date__gte=datetime.date.today()
+        ).get(pk=pk)
     except model.DoesNotExist:
+        raise Http404()
+    if datetime.datetime.now() > training.get_end_datetime():
         raise Http404()
     return training

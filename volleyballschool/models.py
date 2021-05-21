@@ -295,6 +295,7 @@ class Timetable(TimetableSample):
 class Training(TimetableSample):
 
     MAX_LEARNERS_PER_TRAINING = 16
+    TRAINING_DURATION = datetime.timedelta(hours=2)
 
     class ListOfStatuses(models.IntegerChoices):
         OK = 1, 'OK'
@@ -352,3 +353,14 @@ class Training(TimetableSample):
     @classmethod
     def get_upcoming_training_or_404(cls, pk):
         return get_upcoming_training_or_404(cls, pk)
+
+    def get_end_datetime(self):
+        start_datetime = datetime.datetime(
+            year=self.date.year,
+            month=self.date.month,
+            day=self.date.day,
+            hour=self.start_time.hour,
+            minute=self.start_time.minute,
+        )
+        end_datetime = start_datetime + self.TRAINING_DURATION
+        return end_datetime
