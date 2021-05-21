@@ -114,5 +114,4 @@ class TrainingAdmin(admin.ModelAdmin):
     list_display_links = list_display
     list_filter = ('court', 'skill_level', 'day_of_week', 'coach')
     ordering = ['-date', 'court', 'skill_level']
-    readonly_fields = ['date', 'court', 'skill_level', 'day_of_week']
     radio_fields = {'status': admin.VERTICAL}

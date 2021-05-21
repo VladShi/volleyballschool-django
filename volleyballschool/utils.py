@@ -3,14 +3,21 @@ from django.core.exceptions import ValidationError
 from django.http import Http404
 
 
-def create_trainings_based_on_timeteble_for_x_days(donor, cls_acceptor, days):
+def create_trainings_based_on_timeteble_for_x_days(
+    timetable,
+    training_class,
+    days,
+    from_monday=False,
+):
     """Create trainings with certain date based on day of the week from
     timeteble for next x days from current date.
 
     Args:
-        donor (django.db.models.Model): the model instance which provide values
-        cls_acceptor (django.db.models.Model):
-            the model which new instance accept values.
+        timetable (django.db.models.Model): the model instance which provide
+        values except certain date
+        training_class (django.db.models.Model):
+            the model which new instance accept values from timetable and gets
+            certain date.
         days (int): number of days from today for creating trainings
 
     Raises:
@@ -19,16 +26,23 @@ def create_trainings_based_on_timeteble_for_x_days(donor, cls_acceptor, days):
     Returns:
         None
     """
-    date_list = [
-        datetime.date.today() + datetime.timedelta(days=x) for x in range(days)
-    ]
+    if from_monday:
+        date_list = [
+            _date_of_the_current_week_monday()
+            + datetime.timedelta(days=x) for x in range(days)
+        ]
+    elif not from_monday:
+        date_list = [
+            datetime.date.today()
+            + datetime.timedelta(days=x) for x in range(days)
+        ]
     for day in date_list:
-        if donor.day_of_week == day.isoweekday():
-            acceptor_instance = cls_acceptor()
-            copy_same_fields(donor, acceptor_instance)
-            acceptor_instance.date = day
+        if timetable.day_of_week == day.isoweekday():
+            training_instance = training_class()
+            copy_same_fields(timetable, training_instance)
+            training_instance.date = day
             try:
-                acceptor_instance.full_clean(validate_unique=True)
+                training_instance.full_clean(validate_unique=True)
             except ValidationError as e:
                 if 'с такими значениями' in e.messages[0] \
                         and 'уже существует' in e.messages[0]:
@@ -37,7 +51,7 @@ def create_trainings_based_on_timeteble_for_x_days(donor, cls_acceptor, days):
                     # + f'и на {training.get_skill_level_display()}'
                     # + ' уже существует'
                 raise e
-            acceptor_instance.save()
+            training_instance.save()
 
 
 def copy_same_fields(donor, acceptor):
@@ -73,11 +87,7 @@ def get_start_date_and_end_date(number_of_weeks):
     Returns:
         [datetime.date]: start_date, end_date
     """
-    current_week_day = datetime.date.today().isoweekday()
-    start_date = (  # Monday of the current week
-        datetime.date.today()
-        - datetime.timedelta(days=(current_week_day-1))
-    )
+    start_date = _date_of_the_current_week_monday()
     end_date = start_date + datetime.timedelta(days=7*number_of_weeks-1)
     return start_date, end_date
 
@@ -128,7 +138,7 @@ def transform_for_timetable(query_set, start_date, number_of_weeks):
                 else:
                     trainigs_for_court['weeks'][week_number].append(
                         {'date': date}
-                            )
+                    )
         transformed_query_set.append(trainigs_for_court)
     return transformed_query_set
 
@@ -158,3 +168,12 @@ def get_upcoming_training_or_404(model, pk):
     if datetime.datetime.now() > training.get_end_datetime():
         raise Http404()
     return training
+
+
+def _date_of_the_current_week_monday():
+    current_week_day = datetime.date.today().isoweekday()
+    monday_of_the_current_week = (
+        datetime.date.today()
+        - datetime.timedelta(days=(current_week_day-1))
+    )
+    return monday_of_the_current_week

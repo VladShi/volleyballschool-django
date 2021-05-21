@@ -269,10 +269,10 @@ class Timetable(TimetableSample):
             elif matching_trainings:
                 matching_trainings.update(active=False)
                 super().save(*args, **kwargs)
-            self.create_trainings()
+            self.create_upcoming_trainings()
         else:
             super().save(*args, **kwargs)
-            self.create_trainings()
+            self.create_upcoming_trainings()
 
     def delete(self, *args, **kwargs):
         matching_trainings = Training.objects.filter(
@@ -287,9 +287,10 @@ class Timetable(TimetableSample):
         else:
             super().delete(*args, **kwargs)
 
-    def create_trainings(self):
+    def create_upcoming_trainings(self, from_monday=False):
         if self.active is True:
-            create_trainings_based_on_timeteble_for_x_days(self, Training, 15)
+            create_trainings_based_on_timeteble_for_x_days(self, Training, 15,
+                                                           from_monday)
 
 
 class Training(TimetableSample):
