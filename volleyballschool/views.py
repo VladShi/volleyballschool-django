@@ -136,7 +136,10 @@ class CancelRegistrationForTrainingView(View):
 
     def get(self, request, *args, **kwargs):
         training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
-        if self.request.user in training.learners.all():
+        if (
+            self.request.user in training.learners.all()
+            and training.is_more_than_an_hour_before_start()
+        ):
             training.learners.remove(request.user)
         return redirect('registration-for-training', self.kwargs['pk'])
 

@@ -365,3 +365,10 @@ class Training(TimetableSample):
         )
         end_datetime = start_datetime + self.TRAINING_DURATION
         return end_datetime
+
+    def is_more_than_an_hour_before_start(self):
+        start_time = self.get_end_datetime() - self.TRAINING_DURATION
+        an_hour_before_start = start_time - datetime.timedelta(hours=1)
+        if datetime.datetime.now() < an_hour_before_start:
+            return True
+        return False
