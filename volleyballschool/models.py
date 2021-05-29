@@ -130,6 +130,43 @@ class Subscription(models.Model):
         verbose_name = 'Абонемент пользователя'
         verbose_name_plural = 'Абонементы пользователей'
 
+    def get_start_date(self):
+        """Дата отсчёта срока действия абонемента.
+        Отсчёт с момента первого посещения тренировки, но не позднее чем через
+        10 дней с момента покупки.
+        Returns:
+            [datetime.date]
+        """
+        if self.start_date:
+            return self.start_date
+        first_training = self.trainings.order_by('date').first()
+        ten_days_from_purchase = (self.purchase_date
+                                  + datetime.timedelta(days=10))
+        if first_training and first_training.date <= ten_days_from_purchase:
+            if datetime.date.today() > first_training.date:
+                self.start_date = first_training.date
+                self.save(update_fields=['start_date'])
+            return first_training.date
+        if datetime.date.today() > ten_days_from_purchase:
+            self.start_date = self.purchase_date
+            self.save(update_fields=['start_date'])
+        return self.purchase_date
+
+    def get_end_date(self):
+        if self.end_date:
+            return self.end_date
+        validity = datetime.timedelta(days=self.validity)
+        ten_days = datetime.timedelta(days=10)
+        if self.start_date:
+            end_date = self.start_date + validity
+            self.end_date = end_date
+            self.save(update_fields=['end_date'])
+            return end_date
+        return self.get_start_date() + validity + ten_days
+
+    def get_remaining_trainings_qty(self):
+        return self.trainings_qty - self.trainings.count()
+
 
 class OneTimeTraining(models.Model):
     """В таблице должна находиться только единственная запись с ценной
