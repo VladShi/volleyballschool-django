@@ -12,6 +12,7 @@ body {
 
 .btn {
     display: inline-block;
+    cursor: pointer;
     background: #304291;
     color:rgb(218, 218, 218);
     padding: 5px 45px;
@@ -159,12 +160,13 @@ body {
 
 .nav__sub-menu {
     position: absolute;
-    height: 0; 
-    overflow: hidden; 
+    font-size: 6px;
+    height: 0;
+    overflow: hidden;
     opacity: 0;
-    transition: all .3s ease-out;
+    transition: all .2s linear;
     position: absolute;
-    width: 240px;
+    width: 95px;
     background: rgba(248, 248, 248, 0.9);
     line-height: 1.5;
     padding-left: 9px;
@@ -187,7 +189,6 @@ body {
     text-decoration: none;
     text-transform: uppercase;
     color: #293872;
-    font-size: 16px;
 }
 
 
@@ -223,6 +224,14 @@ body {
 .content__text{
     text-indent: 10px;
     font-size: 16px;
+}
+
+.content__text_success{
+    color: rgb(12, 138, 12);
+}
+
+.content__text_warning{
+    color: rgb(184, 35, 16);
 }
 
 .content__text_mh160 {

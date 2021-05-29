@@ -1,20 +1,19 @@
 import datetime
 
-from django.views.generic import (
-    ListView, TemplateView, DetailView, CreateView, View
-)
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
-from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, View)
 
-from .models import (
-    News, Coach, SubscriptionSample, OneTimeTraining, Court, Article, Training,
-)
+from volleyballschool.utils import (copy_same_fields,
+                                    get_start_date_and_end_date,
+                                    transform_for_timetable)
+
 from .forms import RegisterUserForm
-from volleyballschool.utils import (
-    get_start_date_and_end_date, transform_for_timetable,
-)
+from .models import (Article, Coach, Court, News, OneTimeTraining,
+                     Subscription, SubscriptionSample, Training)
 
 
 class IndexView(ListView):
@@ -107,7 +106,55 @@ class TimetableView(ListView):
         return context
 
 
-class RegistrationForTrainingView(DetailView):
+class BuyingASubscriptionView(LoginRequiredMixin, DetailView):
+
+    template_name = 'volleyballschool/buying-a-subscription.html'
+    context_object_name = 'subscription_sample'
+
+    def get_object(self):
+        subscription_sample = get_object_or_404(
+            SubscriptionSample,
+            pk=self.kwargs['pk'],
+            active=True,
+        )
+        return subscription_sample
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('confirm', False):
+            subscription_sample = self.get_object()
+            if request.user.balance > subscription_sample.amount:
+                subscription = Subscription()
+                copy_same_fields(subscription_sample, subscription)
+                subscription.user = request.user
+                subscription.purchase_date = datetime.date.today()
+                subscription.save()
+                request.user.balance -= subscription_sample.amount
+                request.user.save(update_fields=['balance'])
+                request.session['submitted'] = True
+                return redirect(
+                    'success-buying-a-subscription', subscription.id
+                )
+        return redirect('buying-a-subscription', self.kwargs['pk'])
+
+
+class SuccessBuyingASubscriptionView(LoginRequiredMixin, View):
+
+    template_name = 'volleyballschool/success-buying-a-subscription.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.session.get('submitted', False):
+            subscription = get_object_or_404(
+                Subscription.objects.select_related('user'),
+                pk=self.kwargs['pk'],
+            )
+            request.session.pop('submitted', None)
+            return render(
+                request, self.template_name, {'subscription': subscription}
+            )
+        return redirect('prices')
+
+
+class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
 
     template_name = 'volleyballschool/registration-for-training.html'
     context_object_name = 'training'
@@ -123,7 +170,7 @@ class RegistrationForTrainingView(DetailView):
         return context
 
 
-class ConfirmRegistrationForTrainingView(View):
+class ConfirmRegistrationForTrainingView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
@@ -132,7 +179,7 @@ class ConfirmRegistrationForTrainingView(View):
         return redirect('registration-for-training', self.kwargs['pk'])
 
 
-class CancelRegistrationForTrainingView(View):
+class CancelRegistrationForTrainingView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
@@ -147,7 +194,6 @@ class CancelRegistrationForTrainingView(View):
 class AccountView(LoginRequiredMixin, TemplateView):
 
     template_name = 'volleyballschool/account.html'
-    login_url = 'login'
 
 
 class RegisterUserView(CreateView):

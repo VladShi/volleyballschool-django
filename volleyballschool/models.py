@@ -15,7 +15,7 @@ from .utils import (
 class User(AbstractUser):
     patronymic = models.CharField('Отчество', max_length=150, blank=True)
     balance = models.DecimalField(
-        verbose_name='Баланс',
+        verbose_name='Баланс (руб.)',
         max_digits=9,
         decimal_places=2,
         default=0,
@@ -99,6 +99,36 @@ class SubscriptionSample(models.Model):
             return int(self.amount / self.trainings_qty)
         except ZeroDivisionError:
             return "количество тренировок не должно быть равным нулю"
+
+
+class Subscription(models.Model):
+    trainings_qty = models.PositiveSmallIntegerField('Количество тренировок')
+    validity = models.PositiveSmallIntegerField('Срок действия(дней)')
+    user = models.ForeignKey(
+        User,
+        verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+    )
+    purchase_date = models.DateField('Дата покупки', auto_now_add=True)
+    trainings = models.ManyToManyField(
+        'Training',
+        verbose_name='Тренировки',
+        blank=True,
+    )
+    start_date = models.DateField(
+        verbose_name='Дата начала действия',
+        blank=True,
+        null=True,
+    )
+    end_date = models.DateField(
+        verbose_name='Дата окончания действия',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Абонемент пользователя'
+        verbose_name_plural = 'Абонементы пользователей'
 
 
 class OneTimeTraining(models.Model):

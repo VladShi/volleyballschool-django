@@ -1,0 +1,39 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+
+            <div class="content__header">
+                <h1>{{ subscription_sample.name }}</h1>
+                <h2>Подтвердите покупку абонемента:</h2>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <br>
+                <div class="content__block-header">{{ subscription_sample.name }}</div>
+                <p class="content__text">Стоимость одного занятия по абонементу:
+                    {{ subscription_sample.get_price_for_one_training }} руб</p>
+                <p class="content__text">Стоимость абонемента: {{ subscription_sample.amount }} руб</p>
+                <p class="content__text">Срок действия Абонемента: {{ subscription_sample.validity}} дней, <br>
+                    <i style="padding-left: 10px; color:dimgrey">отсчёт начинается с момента первого посещения тренировки,
+                        но не позднее чем 10 дней с момента покупки.</i></p>
+                <br>
+                <p class="content__text">{{ subscription_sample.amount }} руб. будет списано с Вашего счёта.</p>
+                {% if request.user.balance > subscription_sample.amount %}
+                <!-- <br>
+                <a class="btn" href="#">Подтвердить</a> -->
+                <form method="post">{% csrf_token %}
+                    <br>
+                    <input class="btn" type="submit" value="Подтвердить" name="confirm">
+                </form>
+                {% else %}
+                <p class="content__text">На Вашем счету недостаточно средств.</p>
+                <a class="btn" href="#">Пополнить</a>
+                {% endif %}
+            </div>
+
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}

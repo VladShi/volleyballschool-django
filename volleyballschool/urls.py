@@ -10,15 +10,15 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 """
-from django.urls import path, re_path
 from django.contrib.auth import views as auth_views
+from django.urls import path, re_path
 
-from .views import (
-    IndexView, NewsView, CoachesView, PricesView, CourtsView, ArticlesView,
-    ArticleDetailView, AccountView, RegisterUserView, TimetableView,
-    logout_user, RegistrationForTrainingView,
-    ConfirmRegistrationForTrainingView, CancelRegistrationForTrainingView,
-)
+from .views import (AccountView, ArticleDetailView, ArticlesView,
+                    BuyingASubscriptionView, CancelRegistrationForTrainingView,
+                    CoachesView, ConfirmRegistrationForTrainingView,
+                    CourtsView, IndexView, NewsView, PricesView,
+                    RegisterUserView, RegistrationForTrainingView,
+                    SuccessBuyingASubscriptionView, TimetableView, logout_user)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index_page'),
@@ -36,6 +36,16 @@ urlpatterns = [
         r'^timetable/(?P<skill_level>[1-3]{1})/$',
         TimetableView.as_view(),
         name='timetable'
+    ),
+    path(
+        'buying-a-subscription/<int:pk>/',
+        BuyingASubscriptionView.as_view(),
+        name='buying-a-subscription',
+    ),
+    path(
+        'success-buying-a-subscription/<int:pk>/',
+        SuccessBuyingASubscriptionView.as_view(),
+        name='success-buying-a-subscription',
     ),
     path(
         'registration-for-training/<int:pk>/',
@@ -57,6 +67,7 @@ urlpatterns = [
         'login/',
         auth_views.LoginView.as_view(
             template_name='volleyballschool/login.html',
+            redirect_authenticated_user=True,
         ),
         name='login',
     ),

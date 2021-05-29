@@ -25,10 +25,10 @@
                     {{ subscription.get_price_for_one_training }} руб</p>
                 <p class="content__text">Стоимость абонемента: {{ subscription.amount }} руб</p>
                 <p class="content__text">Срок действия Абонемента: {{ subscription.validity}} дней, <br>
-                    <i style="padding-left: 10px; color:dimgrey">с момента первого посещения тренировки,
-                        но не позднее чем 10 дней с момента покупки.</i></p>
+                    <i style="padding-left: 10px; color:dimgrey">отсчёт начинается с момента первого посещения тренировки,
+                        но не позднее чем через 10 дней с момента покупки.</i></p>
                 <p class="content__text">Длительность тренировки: 2 часа</p>
-                <a class="btn" href="#">Купить</a>
+                <a class="btn" href="{% url 'buying-a-subscription' subscription.pk %}">Купить</a>
             </div>
             {% endfor %}
 

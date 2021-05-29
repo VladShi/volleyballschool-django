@@ -120,6 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'volleyballschool.User'
 
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'account'
 
 # Internationalization

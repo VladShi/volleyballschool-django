@@ -1,13 +1,26 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-from .models import (
-    User, News, Coach, SubscriptionSample, OneTimeTraining, Court, Article,
-    Timetable, Training,
-)
+from .models import (Article, Coach, Court, News, OneTimeTraining,
+                     Subscription, SubscriptionSample, Timetable, Training,
+                     User)
 
 
-admin.site.register(User, UserAdmin)
+@admin.register(User)
+class UserAdmin(DjangoUserAdmin):
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Персональная информация', {'fields': (
+            'first_name', 'patronymic', 'last_name', 'passport_number',
+            'passport_data', 'email')
+        }),
+        ('Баланс', {'fields': ('balance',)}),
+        ('Права доступа', {'fields': (
+            'is_active', 'is_staff', 'is_superuser', 'groups',
+            'user_permissions'),
+        }),
+        ('Важные даты', {'fields': ('last_login', 'date_joined')}),
+    )
 
 
 @admin.register(News)
@@ -48,6 +61,12 @@ class SubscriptionSampleAdmin(admin.ModelAdmin):
         )
         form.base_fields["active"].initial = True
         return form
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+
+    list_display = ('user', 'purchase_date', 'trainings_qty')
 
 
 @admin.register(Court)

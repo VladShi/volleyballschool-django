@@ -1,0 +1,27 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+
+            <div class="content__header" style="margin-top: 100px;">
+                <h1 class="content__text_success">Вы успешно приобрели абонемент</h1>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <br>
+                <p class="content__text">Количество занятий по абонементу: <b>{{ subscription.trainings_qty }}</b></p>
+                <p class="content__text">Дата приобретения: <b>{{ subscription.purchase_date }} </b> </p>
+                <p class="content__text">Срок действия абонемента: <b>{{ subscription.validity }} дней</b> </p>
+                <p class="content__text">
+                    <i style="color:dimgrey">Отсчёт срока действия начинается с момента первого посещения тренировки по абонементу.
+                    <br>Если в течение 10 дней не было посещений тренировок, то отсчет начинается через 10 дней с даты покупки.</i>
+                </p>
+                <br>
+                <p class="content__text">Остаток на Вашем счёте: <b>{{ request.user.balance }}</b> руб.</p>
+            </div>
+
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}
