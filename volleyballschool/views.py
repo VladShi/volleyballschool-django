@@ -165,29 +165,59 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user in self.object.learners.all():
+        user = self.request.user
+        if user in self.object.learners.all():
             context['already_registered'] = True
+        context['subscription_of_user'] = user.get_first_active_subscription(
+            check_zero_qty=True
+        )
+        context['price_for_one_training'] = (
+                        OneTimeTraining.objects.first().price
+                    )
         return context
 
-
-class ConfirmRegistrationForTrainingView(LoginRequiredMixin, View):
-
-    def get(self, request, *args, **kwargs):
-        training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
-        if training.get_free_places() > 0:
-            training.learners.add(request.user)
-        return redirect('registration-for-training', self.kwargs['pk'])
-
-
-class CancelRegistrationForTrainingView(LoginRequiredMixin, View):
-
-    def get(self, request, *args, **kwargs):
-        training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
-        if (
-            self.request.user in training.learners.all()
-            and training.is_more_than_an_hour_before_start()
-        ):
-            training.learners.remove(request.user)
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        if request.POST.get('confirm', False):
+            # запись на тренировку
+            training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
+            if training.get_free_places() > 0:
+                if request.POST.get('payment_by', False) == 'subscription':
+                    subscription_of_user = (
+                        user.get_first_active_subscription(check_zero_qty=True)
+                    )
+                    if subscription_of_user:
+                        training.learners.add(user)
+                        subscription_of_user.trainings.add(training)
+                if request.POST.get('payment_by', False) == 'balance':
+                    price_for_one_training = (
+                        OneTimeTraining.objects.first().price
+                    )
+                    if user.balance > price_for_one_training:
+                        training.learners.add(user)
+                        user.balance -= price_for_one_training
+                        user.save(update_fields=['balance'])
+            return redirect('registration-for-training', self.kwargs['pk'])
+        if request.POST.get('cancel', False):
+            # отмена записи на тренировку
+            training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
+            if (
+                user in training.learners.all()
+                and training.is_more_than_an_hour_before_start()
+            ):
+                training.learners.remove(user)
+                subscription_of_user = user.get_first_active_subscription()
+                if (
+                    subscription_of_user
+                    and training in subscription_of_user.trainings.all()
+                ):
+                    subscription_of_user.trainings.remove(training)
+                else:
+                    price_for_one_training = (
+                        OneTimeTraining.objects.first().price
+                    )
+                    user.balance += price_for_one_training
+                    user.save(update_fields=['balance'])
         return redirect('registration-for-training', self.kwargs['pk'])
 
 

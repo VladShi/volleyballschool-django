@@ -31,6 +31,27 @@ class User(AbstractUser):
         blank=True,
     )
 
+    def get_first_active_subscription(self, check_zero_qty=False):
+        """returns first by purchase_date active subscription of user or None.
+
+        Args:
+            check_zero_qty (bool, optional): If True, returns first active
+            subscription only if remaining trainings quantity of the
+            subscription greater then zero. Defaults to False.
+        """
+        subscriptions = list(
+            self.subscriptions.filter(active=True).order_by('purchase_date')
+        )
+        for subscription in subscriptions:
+            subscription_is_active, remaining_trainings_qty = (
+                subscription.is_active(return_qty=True)
+            )
+            if subscription_is_active and check_zero_qty is False:
+                return subscription
+            elif subscription_is_active and check_zero_qty is True:
+                if remaining_trainings_qty > 0:
+                    return subscription
+
 
 class News(models.Model):
     title = models.CharField('Заголовок', max_length=120)
@@ -108,6 +129,7 @@ class Subscription(models.Model):
         User,
         verbose_name='Пользователь',
         on_delete=models.CASCADE,
+        related_name='subscriptions',
     )
     purchase_date = models.DateField('Дата покупки', auto_now_add=True)
     trainings = models.ManyToManyField(
@@ -125,6 +147,7 @@ class Subscription(models.Model):
         blank=True,
         null=True,
     )
+    active = models.BooleanField('Активный', default=True)
 
     class Meta:
         verbose_name = 'Абонемент пользователя'
@@ -166,6 +189,24 @@ class Subscription(models.Model):
 
     def get_remaining_trainings_qty(self):
         return self.trainings_qty - self.trainings.count()
+
+    def is_active(self, return_qty=False):
+        if self.active is False:
+            return False
+        if datetime.date.today() > self.get_end_date():
+            self.active = False
+            self.save(update_fields=['active'])
+            return False
+        remaining_trainings_qty = self.get_remaining_trainings_qty()
+        if remaining_trainings_qty <= 0:
+            last_training = self.trainings.order_by('date').last()
+            if datetime.date.today() > last_training.date:
+                self.active = False
+                self.save(update_fields=['active'])
+                return False
+        if return_qty is False:
+            return True
+        return True, remaining_trainings_qty
 
 
 class OneTimeTraining(models.Model):

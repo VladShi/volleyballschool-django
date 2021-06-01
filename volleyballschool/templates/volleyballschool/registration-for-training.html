@@ -38,17 +38,29 @@
                     </tr>
                 </table>
                 {% if already_registered %}
-                    <p class="content__training-msg">Вы записаны на тренировку<br></p>
+                    <p class="content__training-msg">Вы записаны на тренировку</p>
                     {% if training.is_more_than_an_hour_before_start%}
-                        <p class="content__training-btn">
-                            <a class="btn" href="{% url 'cancel-registration-for-training' training.pk %}">Отменить</a>
-                        </p>
+                        <form method="POST">{% csrf_token %}
+                            <input class="btn" type="submit" value="Отменить" name="cancel">
+                        </form>
                     {% endif %}
                 {% elif training.get_free_places > 0 %}
-                    <p><br></p>
-                    <p class="content__training-btn">
-                        <a class="btn" href="{% url 'confirm-registration-for-training' training.pk %}">Подтвердить</a>
-                    </p>
+                    {% if subscription_of_user %}
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="payment_by" value="subscription"> 
+                            <p class="content__training-msg">Занятие будет списано с Вашего действующего абонемента.</p>
+                            <input class="btn" type="submit" value="Подтвердить" name="confirm">
+                        </form>
+                    {% elif request.user.balance >= price_for_one_training %}
+                        <form method="POST">{% csrf_token %}
+                            <input type="hidden" name="payment_by" value="balance">
+                            <p class="content__training-msg">Стоимость занятия в размере {{ price_for_one_training }} руб. будет списана с Вашего счёта</p>
+                            <input class="btn" type="submit" value="Подтвердить" name="confirm">
+                        </form>
+                    {% else %}
+                        <p class="content__training-msg">У вас нет действующего абонемента и недостаточно средств для оплаты занятия</p>
+                        <a class="btn" href="#">Пополнить</a>
+                    {% endif %}
                 {% else %}
                     <p><br></p>
                     <p class="content__training-msg">Свободных мест нет</p>

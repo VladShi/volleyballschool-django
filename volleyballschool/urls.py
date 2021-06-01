@@ -14,10 +14,9 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, re_path
 
 from .views import (AccountView, ArticleDetailView, ArticlesView,
-                    BuyingASubscriptionView, CancelRegistrationForTrainingView,
-                    CoachesView, ConfirmRegistrationForTrainingView,
-                    CourtsView, IndexView, NewsView, PricesView,
-                    RegisterUserView, RegistrationForTrainingView,
+                    BuyingASubscriptionView, CoachesView, CourtsView,
+                    IndexView, NewsView, PricesView, RegisterUserView,
+                    RegistrationForTrainingView,
                     SuccessBuyingASubscriptionView, TimetableView, logout_user)
 
 urlpatterns = [
@@ -51,16 +50,6 @@ urlpatterns = [
         'registration-for-training/<int:pk>/',
         RegistrationForTrainingView.as_view(),
         name='registration-for-training',
-    ),
-    path(
-        'confirm-registration-for-training/<int:pk>/',
-        ConfirmRegistrationForTrainingView.as_view(),
-        name='confirm-registration-for-training',
-    ),
-    path(
-        'cancel-registration-for-training/<int:pk>/',
-        CancelRegistrationForTrainingView.as_view(),
-        name='cancel-registration-for-training',
     ),
     path('account/', AccountView.as_view(), name='account'),
     path(

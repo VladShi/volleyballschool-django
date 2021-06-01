@@ -21,6 +21,7 @@ body {
     box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, .3);
     transition: .2s;
 }
+
 .btn_timetable {
     width: 480px;
     height: 40px;
@@ -473,17 +474,18 @@ body {
 
 .content__training-msg {
     text-align: center;
+    min-height: 80px;
     font-size: 20px;
     font-weight: 700;
     color: rgb(199, 11, 49);
 }
 
 .content__training-table {
-    margin: 60px auto 30px;
+    margin: 30px auto 30px;
 }
 
 .content__training-table td {
-    padding: 7px 7px;
+    padding: 3px 7px;
     vertical-align: middle;
     text-align: left;
 }

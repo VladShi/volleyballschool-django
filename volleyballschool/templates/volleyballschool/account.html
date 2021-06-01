@@ -19,7 +19,7 @@
 
                 <div class="content__block content__block_w100">
                     <div class="content__block-header">Действующие абонементы</div>
-                    {% for last_subscription in user.subscription_set.all %}
+                    {% for last_subscription in user.subscriptions.all %}
                     <div class="content__text">
                         <p>Абонемент на {{ last_subscription.trainings_qty }} занятия. Действителен с {{ last_subscription.get_start_date|date:"d M" }} по {{ last_subscription.get_end_date }}
                         <br>Осталось занятий: <b>{{ last_subscription.get_remaining_trainings_qty }}</b></p>
