@@ -177,3 +177,19 @@ def _date_of_the_current_week_monday():
         - datetime.timedelta(days=(current_week_day-1))
     )
     return monday_of_the_current_week
+
+
+def cancel_registration_for_training(user, training, price_for_one_training):
+    if (
+        user in training.learners.all()
+        and training.is_more_than_an_hour_before_start()
+    ):
+        subscription_of_user = (
+            training.subscription_set.filter(user=user).first()
+        )
+        if subscription_of_user:
+            subscription_of_user.trainings.remove(training)
+        else:
+            user.balance += price_for_one_training
+            user.save(update_fields=['balance'])
+        training.learners.remove(user)

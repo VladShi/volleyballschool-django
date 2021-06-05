@@ -2,18 +2,20 @@ import datetime
 
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import (CreateView, DetailView, ListView,
                                   TemplateView, View)
 
-from volleyballschool.utils import (copy_same_fields,
+from volleyballschool.utils import (cancel_registration_for_training,
+                                    copy_same_fields,
                                     get_start_date_and_end_date,
                                     transform_for_timetable)
 
 from .forms import RegisterUserForm
 from .models import (Article, Coach, Court, News, OneTimeTraining,
-                     Subscription, SubscriptionSample, Training)
+                     Subscription, SubscriptionSample, Training, User)
 
 
 class IndexView(ListView):
@@ -168,7 +170,9 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
         user = self.request.user
         if user in self.object.learners.all():
             context['already_registered'] = True
+        training_date = self.object.date
         context['subscription_of_user'] = user.get_first_active_subscription(
+            training_date,
             check_zero_qty=True
         )
         context['price_for_one_training'] = (
@@ -178,13 +182,16 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
+        training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
         if request.POST.get('confirm', False):
             # запись на тренировку
-            training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
             if training.get_free_places() > 0:
                 if request.POST.get('payment_by', False) == 'subscription':
                     subscription_of_user = (
-                        user.get_first_active_subscription(check_zero_qty=True)
+                        user.get_first_active_subscription(
+                            training.date,
+                            check_zero_qty=True
+                        )
                     )
                     if subscription_of_user:
                         training.learners.add(user)
@@ -199,31 +206,54 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
                         user.save(update_fields=['balance'])
             return redirect('registration-for-training', self.kwargs['pk'])
         if request.POST.get('cancel', False):
-            # отмена записи на тренировку
-            training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
-            if (
-                user in training.learners.all()
-                and training.is_more_than_an_hour_before_start()
-            ):
-                training.learners.remove(user)
-                subscription_of_user = user.get_first_active_subscription()
-                if (
-                    subscription_of_user
-                    and training in subscription_of_user.trainings.all()
-                ):
-                    subscription_of_user.trainings.remove(training)
-                else:
-                    price_for_one_training = (
-                        OneTimeTraining.objects.first().price
-                    )
-                    user.balance += price_for_one_training
-                    user.save(update_fields=['balance'])
+            price_for_one_training = (OneTimeTraining.objects.first().price)
+            cancel_registration_for_training(user, training,
+                                             price_for_one_training)
         return redirect('registration-for-training', self.kwargs['pk'])
 
 
 class AccountView(LoginRequiredMixin, TemplateView):
 
     template_name = 'volleyballschool/account.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        year_ago = datetime.date.today() - datetime.timedelta(days=365)
+        last_year_subscriptions = (
+            Subscription.objects.prefetch_related('trainings').filter(
+                purchase_date__gte=year_ago).order_by('purchase_date')
+        )
+        prefetch_subscriptions = Prefetch(
+            'subscriptions', queryset=last_year_subscriptions)
+        upcoming_trainings = Training.objects.select_related(
+            'court').filter(date__gte=datetime.date.today())
+        prefetch_trainings = Prefetch(
+            'trainings', queryset=upcoming_trainings)
+        user_pk = self.request.user.pk
+        user = User.objects.prefetch_related(
+            prefetch_trainings, prefetch_subscriptions).get(pk=user_pk)
+        user_upcoming_trainings = user.trainings.all()
+        context['user_upcoming_trainings'] = user_upcoming_trainings
+        user_last_year_subscriptions = user.subscriptions.all()
+        user_active_subscriptions = []
+        last_not_active_subscription = None
+        for subscription in user_last_year_subscriptions:
+            if subscription.is_active():
+                user_active_subscriptions.append(subscription)
+            else:
+                last_not_active_subscription = subscription
+        context['user_active_subscriptions'] = user_active_subscriptions
+        context['last_not_active_subscription'] = last_not_active_subscription
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('cancel', False):
+            training = Training.get_upcoming_training_or_404(
+                request.POST.get('pk', None))
+            price_for_one_training = (OneTimeTraining.objects.first().price)
+            cancel_registration_for_training(request.user, training,
+                                             price_for_one_training)
+        return redirect('account')
 
 
 class RegisterUserView(CreateView):

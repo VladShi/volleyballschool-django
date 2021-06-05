@@ -37,6 +37,7 @@
                         <td>{{ training.get_free_places }}/16 </td>
                     </tr>
                 </table>
+                <p>Отменить запись на тренировку возможно не позднее чем за час до её начала.</p>
                 {% if already_registered %}
                     <p class="content__training-msg">Вы записаны на тренировку</p>
                     {% if training.is_more_than_an_hour_before_start%}

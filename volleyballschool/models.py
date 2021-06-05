@@ -31,13 +31,18 @@ class User(AbstractUser):
         blank=True,
     )
 
-    def get_first_active_subscription(self, check_zero_qty=False):
-        """returns first by purchase_date active subscription of user or None.
+    def get_first_active_subscription(self, training_date,
+                                      check_zero_qty=False):
+        """returns first by purchase_date active subscription of user valid for
+        training_date or None.
 
         Args:
-            check_zero_qty (bool, optional): If True, returns first active
-            subscription only if remaining trainings quantity of the
-            subscription greater then zero. Defaults to False.
+            training_date (datetime.date):
+                date for which the subscription activity is checked.
+            check_zero_qty (bool, optional):
+                If True, returns first active subscription only if remaining
+                trainings quantity of the subscription greater then zero.
+                Defaults to False.
         """
         subscriptions = list(
             self.subscriptions.filter(active=True).order_by('purchase_date')
@@ -46,9 +51,18 @@ class User(AbstractUser):
             subscription_is_active, remaining_trainings_qty = (
                 subscription.is_active(return_qty=True)
             )
-            if subscription_is_active and check_zero_qty is False:
+            subscription_end_date = subscription.get_end_date()
+            if (
+                subscription_is_active
+                and subscription_end_date >= training_date
+                and check_zero_qty is False
+            ):
                 return subscription
-            elif subscription_is_active and check_zero_qty is True:
+            elif (
+                subscription_is_active
+                and subscription_end_date >= training_date
+                and check_zero_qty is True
+            ):
                 if remaining_trainings_qty > 0:
                     return subscription
 
@@ -165,38 +179,43 @@ class Subscription(models.Model):
         first_training = self.trainings.order_by('date').first()
         ten_days_from_purchase = (self.purchase_date
                                   + datetime.timedelta(days=10))
+        validity = datetime.timedelta(days=self.validity)
         if first_training and first_training.date <= ten_days_from_purchase:
             if datetime.date.today() > first_training.date:
                 self.start_date = first_training.date
-                self.save(update_fields=['start_date'])
+                self.end_date = self.start_date + validity
+                self.save(update_fields=['start_date', 'end_date'])
             return first_training.date
         if datetime.date.today() > ten_days_from_purchase:
             self.start_date = self.purchase_date
-            self.save(update_fields=['start_date'])
+            self.end_date = self.start_date + validity
+            self.save(update_fields=['start_date', 'end_date'])
         return self.purchase_date
 
     def get_end_date(self):
         if self.end_date:
             return self.end_date
         validity = datetime.timedelta(days=self.validity)
-        ten_days = datetime.timedelta(days=10)
         if self.start_date:
-            end_date = self.start_date + validity
-            self.end_date = end_date
+            self.end_date = self.start_date + validity
             self.save(update_fields=['end_date'])
-            return end_date
-        return self.get_start_date() + validity + ten_days
+            return self.end_date
+        return self.purchase_date + validity
 
     def get_remaining_trainings_qty(self):
         return self.trainings_qty - self.trainings.count()
 
     def is_active(self, return_qty=False):
         if self.active is False:
-            return False
+            if return_qty is False:
+                return False
+            return False, self.get_remaining_trainings_qty()
         if datetime.date.today() > self.get_end_date():
             self.active = False
             self.save(update_fields=['active'])
-            return False
+            if return_qty is False:
+                return False
+            return False, self.get_remaining_trainings_qty()
         remaining_trainings_qty = self.get_remaining_trainings_qty()
         if remaining_trainings_qty <= 0:
             last_training = self.trainings.order_by('date').last()
@@ -421,6 +440,7 @@ class Training(TimetableSample):
         User,
         verbose_name='Посетители',
         blank=True,
+        related_name='trainings',
     )
     date = models.DateField('Дата')
 

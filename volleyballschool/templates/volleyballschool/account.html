@@ -7,43 +7,58 @@
             <div class="content__inner">
 
                 <div class="content__header">
-                    <h1>{{ user.first_name }} {{ user.patronymic }} {{ user.last_name }}</h1>
-                    <h2>{{ user.username }}</h2>
+                    <h1>{{ request.user.first_name }} {{ request.user.patronymic }} {{ request.user.last_name }}</h1>
+                    <h2>{{ request.user.username }}</h2>
                 </div>
 
                 <div class="content__block content__block_w100">
                     <div class="content__block-header">Сумма на счету</div>
-                        <p class="content__text"><h3>{{ user.balance }} руб.</h3></p>
+                        <p class="content__text"><h3>{{ request.user.balance }} руб.</h3></p>
                         <a class="btn" href="#">Пополнить</a>
                 </div>
 
                 <div class="content__block content__block_w100">
                     <div class="content__block-header">Действующие абонементы</div>
-                    {% for last_subscription in user.subscriptions.all %}
+                    {% for subscription in user_active_subscriptions %}
                     <div class="content__text">
-                        <p>Абонемент на {{ last_subscription.trainings_qty }} занятия. Действителен с {{ last_subscription.get_start_date|date:"d M" }} по {{ last_subscription.get_end_date }}
-                        <br>Осталось занятий: <b>{{ last_subscription.get_remaining_trainings_qty }}</b></p>
+                        <p>Абонемент на {{ subscription.trainings_qty }} занятия. Действителен с {{ subscription.get_start_date|date:"d M" }} по {{ subscription.get_end_date }}
+                        <br>Осталось занятий: <b>{{ subscription.get_remaining_trainings_qty }}</b></p>
                     </div>
+                    {% empty %}
+                    <p>У Вас нет действующего абонемента</p>
+                    <a class="btn" href="{% url 'prices' %}">Купить</a>
                     {% endfor %}
                 </div>
 
                 <div class="content__block content__block_w100">
                     <div class="content__block-header">Ваши записи на предстоящие тренировки</div>
                     <div class="content__text">
-                        <p>Зал на ст.м.Дубровка, 05.01.2021 Вт 19:00</p>
-                        <p>Адрес зала: ул.Дубровский вал, д.45, Школа 456</p>
-                        <a class="btn" href="#">Отменить запись</a>
-                        <p>Зал на ст.м.Дубровка, 07.01.2021 Чт 19:00</p>
-                        <p>Адрес зала: ул.Дубровский вал, д.45, Школа 456</p>
-                        <a class="btn" href="#">Отменить запись</a>
+                        {% for training in user_upcoming_trainings %}
+                            <p> {{ training.court.name }}, {{ training.date }}, {{ training.get_day_of_week_display }}, {{ training.start_time }}. {{ training.get_skill_level_display|capfirst }}</p>
+                            <p> Адрес зала: {{ training.court.address }}</p>
+                                {% if training.is_more_than_an_hour_before_start %}
+                                <form method="POST">{% csrf_token %}
+                                    <input type="hidden" name="pk" value="{{ training.pk }}">
+                                    <input class="btn" type="submit" value="Отменить" name="cancel">
+                                </form>
+                                {% else %}
+                                <hr>
+                                {% endif %}
+                        {% empty %}
+                            <p>Вы не записаны на тренировки</p>
+                        {% endfor %}
                     </div>
                 </div>
 
                 <div class="content__block content__block_w100">
-                    <div class="content__block-header">Последний абонемент</div>
+                    <div class="content__block-header">Последний закончившийся абонемент за прошедший год</div>
                     <div class="content__text">
-                        <p>Абонемент на 8 занятий. Был действителен с 01.01.2021 по 01.02.2021</p>
-                        <p>Не использованных занятий: <b>0</b></p>
+                        {% if last_not_active_subscription %}
+                            <p>Абонемент на {{ last_not_active_subscription.trainings_qty }} занятий. Был действителен с {{ last_not_active_subscription.start_date }} по {{ last_not_active_subscription.end_date }}</p>
+                            <p>Не использованных занятий: <b>{{ last_not_active_subscription.get_remaining_trainings_qty }}</b></p>
+                        {% else %} 
+                            <p>За последний год нет абонементов с истекшим сроком действия.</p>
+                        {% endif %}
                     </div>
                 </div>
 
