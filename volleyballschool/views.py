@@ -25,6 +25,11 @@ class IndexView(ListView):
     queryset = News.objects.order_by('-date')[:3]
 
 
+class LevelsView(TemplateView):
+
+    template_name = 'volleyballschool/levels.html'
+
+
 class NewsView(ListView):
 
     model = News
@@ -234,7 +239,7 @@ class AccountView(LoginRequiredMixin, TemplateView):
             prefetch_trainings, prefetch_subscriptions).get(pk=user_pk)
         user_upcoming_trainings = user.trainings.all()
         context['user_upcoming_trainings'] = user_upcoming_trainings
-        user_last_year_subscriptions = user.subscriptions.all()
+        user_last_year_subscriptions = user.subscriptions.all()[:3]
         user_active_subscriptions = []
         last_not_active_subscription = None
         for subscription in user_last_year_subscriptions:

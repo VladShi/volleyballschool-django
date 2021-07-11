@@ -15,12 +15,13 @@ from django.urls import path, re_path
 
 from .views import (AccountView, ArticleDetailView, ArticlesView,
                     BuyingASubscriptionView, CoachesView, CourtsView,
-                    IndexView, NewsView, PricesView, RegisterUserView,
-                    RegistrationForTrainingView,
+                    IndexView, LevelsView, NewsView, PricesView,
+                    RegisterUserView, RegistrationForTrainingView,
                     SuccessBuyingASubscriptionView, TimetableView, logout_user)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index_page'),
+    path('levels/', LevelsView.as_view(), name='levels'),
     path('news/', NewsView.as_view(), name='news'),
     path('Coaches/', CoachesView.as_view(), name='coaches'),
     path('prices/', PricesView.as_view(), name='prices'),

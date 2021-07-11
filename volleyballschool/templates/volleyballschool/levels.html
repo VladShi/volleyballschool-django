@@ -1,0 +1,37 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header">
+                <h1>Уровни</h1>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <div class="content__block-header">Начальный уровень</div>
+                <p class="content__text">{% lorem 42 w random %}</p>
+                <p class="content__text">{% lorem 22 w random %}</p>
+                <a class="btn" href="{% url 'timetable' '1' %}">Расписание</a>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <div class="content__block-header">Уровень начальный+</div>
+                <p class="content__text">{% lorem 50 w random %}</p>
+                <p class="content__text">{% lorem 18 w random %}</p>
+                <a class="btn" href="{% url 'timetable' '2' %}">Расписание</a>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <div class="content__block-header">Средний уровень</div>
+                <p class="content__text">{% lorem 68 w random %}</p>
+                <p class="content__text">{% lorem 10 w random %}</p>
+                <a class="btn" href="{% url 'timetable' '3' %}">Расписание</a>
+            </div>
+
+        </div><!-- /.content__inner-->
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}
