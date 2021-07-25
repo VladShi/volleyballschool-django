@@ -17,6 +17,7 @@ from .views import (AccountView, ArticleDetailView, ArticlesView,
                     BuyingASubscriptionView, CoachesView, CourtsView,
                     IndexView, LevelsView, NewsView, PricesView,
                     RegisterUserView, RegistrationForTrainingView,
+                    ReplenishmentSuccessView, ReplenishmentView,
                     SuccessBuyingASubscriptionView, TimetableView, logout_user)
 
 urlpatterns = [
@@ -62,5 +63,11 @@ urlpatterns = [
         name='login',
     ),
     path('register/', RegisterUserView.as_view(), name='register'),
+    path('replenishment/', ReplenishmentView.as_view(), name='replenishment'),
+    path(
+        'replenishment-success/',
+        ReplenishmentSuccessView.as_view(),
+        name='replenishment-success',
+    ),
     path('logout/', logout_user, name='logout'),
 ]

@@ -29,8 +29,8 @@
                     <input class="btn" type="submit" value="Подтвердить" name="confirm">
                 </form>
                 {% else %}
-                <p class="content__text">На Вашем счету недостаточно средств.</p>
-                <a class="btn" href="#">Пополнить</a>
+                <p class="content__text content__text_warning"><strong>На Вашем счету недостаточно средств.</strong></p>
+                <a class="btn" href="{% url 'replenishment' %}?next={{ request.path }}">Пополнить</a>
                 {% endif %}
             </div>
 

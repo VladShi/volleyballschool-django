@@ -15,7 +15,7 @@
                 <div class="content__block-header">Разовое посещение</div>
                 <p class="content__text">Стоимость: {{ one_time_training.price }} руб</p>
                 <p class="content__text">Длительность тренировки: 2 часа</p>
-                <a class="btn" href="#">Купить</a>
+                <a class="btn" href="{% url 'levels' %}">Записаться</a>
             </div>
 
             {% for subscription in subscription_samples %}

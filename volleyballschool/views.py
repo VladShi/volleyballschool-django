@@ -268,6 +268,31 @@ class RegisterUserView(CreateView):
     success_url = reverse_lazy('account')
 
 
+class ReplenishmentView(LoginRequiredMixin, TemplateView):
+
+    template_name = 'volleyballschool/replenishment.html'
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        if request.POST.get('replenishment_by', False) == 'test':
+            user.balance += int(request.POST.get('amount', 0))
+            user.save(update_fields=['balance'])
+            url = (reverse_lazy('replenishment-success')
+                   + '?next=' + request.POST.get('next', None))
+            return redirect(url)
+
+
+class ReplenishmentSuccessView(LoginRequiredMixin, TemplateView):
+
+    template_name = 'volleyballschool/replenishment-success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        next = self.request.GET.get('next', None)
+        context['next'] = next.lstrip(' /')
+        return context
+
+
 def logout_user(request):
     logout(request)
     return redirect('login')

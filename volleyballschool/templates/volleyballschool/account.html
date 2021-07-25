@@ -14,7 +14,7 @@
                 <div class="content__block content__block_w100">
                     <div class="content__block-header">Сумма на счету</div>
                         <p class="content__text"><h3>{{ request.user.balance }} руб.</h3></p>
-                        <a class="btn" href="#">Пополнить</a>
+                        <a class="btn" href="{% url 'replenishment' %}?next={{ request.path }}">Пополнить</a>
                 </div>
 
                 <div class="content__block content__block_w100">

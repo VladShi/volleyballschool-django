@@ -1,0 +1,24 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header content__text_success">
+                <h1>Успешное пополнение счёта</h1>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <p>Текущая сумма на вашем счёте: <strong> {{ request.user.balance }} </strong>руб.</p>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <a class="btn" href="{% url 'index_page' %}{{ next }}"> OK </a>
+            </div>
+
+        </div><!-- /.content__inner-->
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}

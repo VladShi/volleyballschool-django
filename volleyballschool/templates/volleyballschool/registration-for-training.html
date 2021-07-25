@@ -60,7 +60,7 @@
                         </form>
                     {% else %}
                         <p class="content__training-msg">У вас нет действующего абонемента и недостаточно средств для оплаты занятия</p>
-                        <a class="btn" href="#">Пополнить</a>
+                        <a class="btn" href="{% url 'replenishment' %}?next={{ request.path }}">Пополнить</a>
                     {% endif %}
                 {% else %}
                     <p><br></p>

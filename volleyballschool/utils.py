@@ -46,7 +46,7 @@ def create_trainings_based_on_timeteble_for_x_days(
             except ValidationError as e:
                 if 'с такими значениями' in e.messages[0] \
                         and 'уже существует' in e.messages[0]:
-                    return  # f'Тренировка c датой {training.date} '
+                    continue  # f'Тренировка c датой {training.date} '
                     # + f'в {training.court} '
                     # + f'и на {training.get_skill_level_display()}'
                     # + ' уже существует'

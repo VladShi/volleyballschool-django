@@ -1,0 +1,51 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<!-- Content-->
+<div class="content">
+    <div class="container">
+        <div class="content__inner">
+
+            <div class="content__header">
+                <h1>Пополнение счёта</h1>
+                <p>
+                    <h2>{{ request.user.first_name }} {{ request.user.patronymic }} {{ request.user.last_name }}<br>
+                    {{ request.user.username }}</h2>
+                </p>
+            </div>
+
+            <div class="content__block content__block_w100">
+                <p>Текущая сумма на вашем счёте: <strong> {{ request.user.balance }} </strong>руб.</p>
+            </div>
+
+                <form method="POST">{% csrf_token %}
+                    <div class="content__block content__block_w100">
+                        <label for="amount">Введите сумму для пополнения счёта:</label>
+                        <p><input type="number" id="amount" name="amount" min="1" max="100000" value="850"> руб.</p>
+                    </div>
+                    <div class="content__block content__block_w100">Выберите способ пополнения:
+                        <p>
+                            <input type="radio" id="replenishmentChoice1"
+                            name="replenishment_by" value="credit_card" disabled>
+                            <label for="replenishmentChoice1">Кредитная карта</label>
+                        </p>
+                        <p>
+                            <input type="radio" id="replenishmentChoice2"
+                            name="replenishment_by" value="vallet" disabled>
+                            <label for="replenishmentChoice2">Нужно будет подключить платежный агрегатор(Юкасса, Робокасса и т.д.)</label>
+                        </p>
+                        <p>
+                            <input type="radio" id="replenishmentChoice3"
+                            name="replenishment_by" value="test" checked>
+                            <label for="replenishmentChoice3">Test (для разработки и тестирования сайта можно зачислить любую сумму на счет текущего аккаунта)</label>
+                        </p>
+                        <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+                        <input class="btn" type="submit" value="Подтвердить" name="confirm">
+                    </div>
+                </form>
+            
+
+        </div><!-- /.content__inner-->
+    </div><!-- /.container -->
+</div><!-- /.content-->
+{% endblock %}
