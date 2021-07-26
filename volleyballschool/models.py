@@ -167,6 +167,14 @@ class Subscription(models.Model):
         verbose_name = 'Абонемент пользователя'
         verbose_name_plural = 'Абонементы пользователей'
 
+    def __str__(self):
+        return (
+            'Абонемент пользователя {}, дата покупки {}'.format(
+                self.user,
+                self.purchase_date,
+            )
+        )
+
     def get_start_date(self):
         """Дата отсчёта срока действия абонемента.
         Отсчёт с момента первого посещения тренировки, но не позднее чем через

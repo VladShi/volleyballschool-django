@@ -1,3 +1,5 @@
+from functools import partial
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
@@ -67,6 +69,34 @@ class SubscriptionSampleAdmin(admin.ModelAdmin):
 class SubscriptionAdmin(admin.ModelAdmin):
 
     list_display = ('user', 'purchase_date', 'trainings_qty')
+    fields = ('user', 'purchase_date', 'trainings_qty',
+              'validity', 'start_date', 'end_date', 'active', 'trainings')
+    readonly_fields = ('user', 'purchase_date', 'validity')
+
+    # если не ограничивать количество отображаемых тренировок достаточно этого:
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+    #     if db_field.name == "trainings":
+    #         kwargs["queryset"] = (
+    #             Training.objects.prefetch_related('court').order_by('-date')
+    #         )
+    #     return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+    def get_form(self, request, obj=None, **kwargs):
+        kwargs['formfield_callback'] = partial(
+            self.formfield_for_dbfield, request=request, obj=obj)
+        return super(SubscriptionAdmin, self).get_form(request, obj, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        subscription = kwargs.pop('obj', None)
+        formfield = super(SubscriptionAdmin, self).formfield_for_dbfield(
+            db_field, **kwargs)
+        if db_field.name == "trainings" and subscription:
+            formfield.queryset = Training.objects.prefetch_related(
+               'court').order_by('-date').filter(
+                date__gte=subscription.get_start_date(),
+                date__lte=subscription.get_end_date())
+            subscription.is_active()
+        return formfield
 
 
 @admin.register(Court)
