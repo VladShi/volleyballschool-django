@@ -31,18 +31,13 @@ class User(AbstractUser):
         blank=True,
     )
 
-    def get_first_active_subscription(self, training_date,
-                                      check_zero_qty=False):
-        """returns first by purchase_date active subscription of user valid for
-        training_date or None.
+    def get_first_active_subscription(self, training_date):
+        """returns first by purchase_date active subscription with not null
+        remaining trainings of user valid for upcoming training_date or None.
 
         Args:
             training_date (datetime.date):
                 date for which the subscription activity is checked.
-            check_zero_qty (bool, optional):
-                If True, returns first active subscription only if remaining
-                trainings quantity of the subscription greater then zero.
-                Defaults to False.
         """
         subscriptions = list(
             self.subscriptions.filter(active=True).order_by('purchase_date')
@@ -54,17 +49,11 @@ class User(AbstractUser):
             subscription_end_date = subscription.get_end_date()
             if (
                 subscription_is_active
+                and training_date >= datetime.date.today()
                 and subscription_end_date >= training_date
-                and check_zero_qty is False
+                and remaining_trainings_qty > 0
             ):
                 return subscription
-            elif (
-                subscription_is_active
-                and subscription_end_date >= training_date
-                and check_zero_qty is True
-            ):
-                if remaining_trainings_qty > 0:
-                    return subscription
 
 
 class News(models.Model):
@@ -230,7 +219,9 @@ class Subscription(models.Model):
             if datetime.date.today() > last_training.date:
                 self.active = False
                 self.save(update_fields=['active'])
-                return False
+                if return_qty is False:
+                    return False
+                return False, remaining_trainings_qty
         if return_qty is False:
             return True
         return True, remaining_trainings_qty

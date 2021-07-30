@@ -178,7 +178,6 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
         training_date = self.object.date
         context['subscription_of_user'] = user.get_first_active_subscription(
             training_date,
-            check_zero_qty=True
         )
         context['price_for_one_training'] = (
                         OneTimeTraining.objects.first().price
@@ -195,7 +194,6 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
                     subscription_of_user = (
                         user.get_first_active_subscription(
                             training.date,
-                            check_zero_qty=True
                         )
                     )
                     if subscription_of_user:
