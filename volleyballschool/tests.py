@@ -1,7 +1,9 @@
 import datetime
 
-from volleyballschool.models import Court, Subscription, Training, User
 from django.test import TestCase
+
+from volleyballschool.models import (Court, OneTimeTraining, Subscription,
+                                     Training, User)
 
 
 class UserModelGetFirstActiveSubscriptionTestCase(TestCase):
@@ -373,3 +375,13 @@ class SubscriptionModelTestCase(TestCase):
         self.sub.trainings.remove(self.past_training)
         self.assertEqual(self.sub.is_active(return_qty=True), (True, 2))
         self.assertIs(self.sub.active, True)
+
+
+class OneTimeTrainingTestCase(TestCase):
+    def test_save_inability_to_save_more_than_one_record(self):
+        record1 = OneTimeTraining.objects.create(price=1)
+        record2 = OneTimeTraining.objects.create(price=2)
+        self.assertEqual(OneTimeTraining.objects.first(), record1)
+        self.assertNotEqual(OneTimeTraining.objects.last(), record2)
+        self.assertNotEqual(OneTimeTraining.objects.first(), record2)
+        self.assertEqual(OneTimeTraining.objects.all().count(), 1)
