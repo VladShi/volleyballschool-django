@@ -126,6 +126,19 @@ class SubscriptionSample(models.Model):
 
 
 class Subscription(models.Model):
+    """
+    Конкретный абонемент пользователя.
+    !!!Важно!!!
+    Для получения из базы значений полей start_date, end_date и active
+    используйте соответствующие методы get_start_date(), get_end_date() и
+    is_active(), вместо прямого обращения к полям модели. Поскольку поля
+    start_date и end_date изначально не заполняются при создании экземпляра, а
+    заполняются в дальнейшем этими методами в зависимости от временных условий
+    и посещенных пользователем абонемента тренировок. Так же должно с помощью
+    метода is_active() изменятся значение поля active когда абонемент выходит
+    из срока дейтствия или заканчивается доступное количество тренировок
+    по абонементу.
+    """
     trainings_qty = models.PositiveSmallIntegerField('Количество тренировок')
     validity = models.PositiveSmallIntegerField('Срок действия(дней)')
     user = models.ForeignKey(
@@ -167,7 +180,7 @@ class Subscription(models.Model):
     def get_start_date(self):
         """Дата отсчёта срока действия абонемента.
         Отсчёт с момента первого посещения тренировки, но не позднее чем через
-        10 дней с момента покупки.
+        10 дней с момента покупки абонемента.
         Returns:
             [datetime.date]
         """
@@ -192,17 +205,34 @@ class Subscription(models.Model):
     def get_end_date(self):
         if self.end_date:
             return self.end_date
+        if not self.start_date:
+            start_date = self.get_start_date()
+            if self.end_date:
+                return self.end_date
         validity = datetime.timedelta(days=self.validity)
         if self.start_date:
             self.end_date = self.start_date + validity
             self.save(update_fields=['end_date'])
             return self.end_date
-        return self.purchase_date + validity
+        return start_date + validity
 
     def get_remaining_trainings_qty(self):
         return self.trainings_qty - self.trainings.count()
 
     def is_active(self, return_qty=False):
+        """Возвращает False, если абонемент не активен.
+        Если абонемент активен, то проверяет его действительность по
+        временным рамкам и количеству посещенных тренировок по абонементу. И
+        по результатам возвращает True, если абонемент действителен, или в
+        противном случае возвращает False, и изменяет значение в базе данных.
+
+        Args:
+            return_qty (bool, optional):
+                При значении опцианального аргумента return_qty=True, так же
+                возвращает вторым значением количество тренировок доступных по
+                текущему абонементу.
+                Defaults to False.
+        """
         if self.active is False:
             if return_qty is False:
                 return False
@@ -216,7 +246,7 @@ class Subscription(models.Model):
         remaining_trainings_qty = self.get_remaining_trainings_qty()
         if remaining_trainings_qty <= 0:
             last_training = self.trainings.order_by('date').last()
-            if datetime.date.today() > last_training.date:
+            if not last_training.is_more_than_an_hour_before_start():
                 self.active = False
                 self.save(update_fields=['active'])
                 if return_qty is False:
@@ -489,6 +519,7 @@ class Training(TimetableSample):
             day=self.date.day,
             hour=self.start_time.hour,
             minute=self.start_time.minute,
+            second=self.start_time.second,
         )
         end_datetime = start_datetime + self.TRAINING_DURATION
         return end_datetime
