@@ -1,5 +1,6 @@
 import datetime
 
+from django.http.response import Http404
 from django.test import TestCase
 
 from volleyballschool.models import (Court, OneTimeTraining, Subscription,
@@ -385,3 +386,117 @@ class OneTimeTrainingTestCase(TestCase):
         self.assertNotEqual(OneTimeTraining.objects.last(), record2)
         self.assertNotEqual(OneTimeTraining.objects.first(), record2)
         self.assertEqual(OneTimeTraining.objects.all().count(), 1)
+
+
+class TrainingTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up data for the whole TestCase
+        cls.today = datetime.date.today()
+        cls.court1 = Court.objects.create(passport_required=False, active=True)
+        cls.upcoming_training = Training.objects.create(
+            day_of_week=1,
+            skill_level=1,
+            date=cls.today+datetime.timedelta(days=2),
+            start_time=datetime.time(18, 00, 00),
+            court=cls.court1,
+        )
+
+    def test_get_end_datetime(self):
+        training = Training.objects.create(
+            day_of_week=1,
+            skill_level=2,
+            date=datetime.datetime(2021, 7, 31),
+            start_time=datetime.time(23, 59, 00),
+            court=self.court1,
+        )
+        end_time = (
+            datetime.datetime(
+                1970, 1, 1,
+                hour=training.start_time.hour,
+                minute=training.start_time.minute,
+                second=training.start_time.second,
+            )
+            + training.TRAINING_DURATION
+        )
+        end_datetime = datetime.datetime(
+            year=2021,
+            month=8,
+            day=1,
+            hour=end_time.hour,
+            minute=end_time.minute,
+            second=end_time.second,
+        )
+        self.assertEqual(training.get_end_datetime(), end_datetime)
+
+    def test_get_free_places(self):
+        Training.MAX_LEARNERS_PER_TRAINING = 2
+        user1 = User.objects.create_user('test_user1')
+        user2 = User.objects.create_user('test_user2')
+        training = self.upcoming_training
+        training.learners.add(user1, user2)
+        self.assertEqual(training.get_free_places(), 0)
+        training.learners.remove(user1)
+        self.assertEqual(training.get_free_places(), 1)
+        training.learners.remove(user2)
+        self.assertEqual(training.get_free_places(), 2)
+
+    def test_is_more_than_an_hour_before_start_is_true(self):
+        after_now_61_minutes = (
+            datetime.datetime.now() + datetime.timedelta(hours=1, minutes=1))
+        training = Training.objects.create(
+            day_of_week=1,
+            skill_level=2,
+            date=datetime.date(
+                after_now_61_minutes.year,
+                after_now_61_minutes.month,
+                after_now_61_minutes.day,
+            ),
+            start_time=datetime.time(
+                after_now_61_minutes.hour,
+                after_now_61_minutes.minute,
+                after_now_61_minutes.second,
+            ),
+            court=self.court1,
+        )
+        self.assertIs(training.is_more_than_an_hour_before_start(), True)
+
+    def test_is_more_than_an_hour_before_start_is_false(self):
+        after_now_59_minutes = (datetime.datetime.now()
+                                + datetime.timedelta(minutes=59))
+        training = Training.objects.create(
+            day_of_week=1,
+            skill_level=2,
+            date=datetime.date(
+                after_now_59_minutes.year,
+                after_now_59_minutes.month,
+                after_now_59_minutes.day,
+            ),
+            start_time=datetime.time(
+                after_now_59_minutes.hour,
+                after_now_59_minutes.minute,
+                after_now_59_minutes.second,
+            ),
+            court=self.court1,
+        )
+        training.save(update_fields=(['date', 'start_time']))
+        self.assertIs(training.is_more_than_an_hour_before_start(), False)
+
+    def test_get_upcoming_training_or_404_for_upcoming_training(self):
+        pk = self.upcoming_training.pk
+        self.assertEqual(
+            Training.get_upcoming_training_or_404(pk=pk),
+            self.upcoming_training
+        )
+
+    def test_get_upcoming_training_or_404_for_past_training(self):
+        past_training = Training.objects.create(
+            day_of_week=1,
+            skill_level=1,
+            start_time=datetime.time(18, 00, 00),
+            date=self.today-datetime.timedelta(days=1),
+            court=self.court1,
+        )
+        pk = past_training.pk
+        with self.assertRaises(Http404):
+            Training.get_upcoming_training_or_404(pk=pk)
