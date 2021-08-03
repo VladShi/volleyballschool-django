@@ -1,10 +1,15 @@
 import datetime
+from unittest import mock
 
 from django.http.response import Http404
 from django.test import TestCase
 
-from volleyballschool.models import (Court, OneTimeTraining, Subscription,
-                                     Training, User)
+from .models import (Court, OneTimeTraining, Subscription, Timetable, Training,
+                     User)
+from .utils import (_date_of_the_current_week_monday,
+                    cancel_registration_for_training, copy_same_fields,
+                    create_trainings_based_on_timeteble_for_x_days,
+                    get_start_date_and_end_date, transform_for_timetable)
 
 
 class UserModelGetFirstActiveSubscriptionTestCase(TestCase):
@@ -500,3 +505,237 @@ class TrainingTestCase(TestCase):
         pk = past_training.pk
         with self.assertRaises(Http404):
             Training.get_upcoming_training_or_404(pk=pk)
+
+
+class UtilsTestCase(TestCase):
+    def test_copy_same_fields(self):
+        court1 = Court.objects.create(passport_required=False, active=True)
+        court2 = Court.objects.create(passport_required=False, active=True)
+        timetable = Timetable.objects.create(
+            day_of_week=1,
+            skill_level=1,
+            court=court1,
+            start_time=datetime.time(18, 00, 00),
+            active=True,
+        )
+        Training.objects.all().delete()
+        training = Training.objects.create(
+            day_of_week=2,
+            skill_level=2,
+            date=datetime.datetime(2021, 7, 31),
+            start_time=datetime.time(20, 30, 00),
+            court=court2,
+            active=False,
+        )
+        copy_same_fields(timetable, training)
+        training.save()
+        self.assertEqual(training.day_of_week, 1)
+        self.assertEqual(training.skill_level, 1)
+        self.assertEqual(training.court, court1)
+        self.assertEqual(training.start_time, datetime.time(18, 00, 00))
+        self.assertEqual(training.active, True)
+
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_date_of_the_current_week_monday(self, mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2010, 1, 1)
+        date = _date_of_the_current_week_monday()
+        self.assertEqual(date, datetime.date(2009, 12, 28))
+
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_get_start_date_and_end_date(self, mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 1, 1)
+        start_date, end_date = get_start_date_and_end_date(2)
+        self.assertEqual(start_date, datetime.date(2019, 12, 30))
+        self.assertEqual(end_date, datetime.date(2020, 1, 12))
+
+    def test_transform_for_timetable(self):
+        court1 = Court.objects.create(
+            name='Корт1', passport_required=False, active=True)
+        court2 = Court.objects.create(
+            name='Корт2', passport_required=False, active=True)
+        for i, j in ((2, 19), (4, 22), (2, 26), (4, 29), (7, 31)):
+            c = court1
+            if j % 2 != 0:
+                c = court2
+            Training.objects.create(
+                day_of_week=i,
+                skill_level=1,
+                start_time=datetime.time(18, 00, 00),
+                date=datetime.date(2020, 5, j),
+                court=c,
+            )
+        query_set = Training.objects.all()
+        start_date = datetime.date(2020, 5, 18)
+        expected_result = [
+            {'name': court1,
+             'weeks': [
+                 [{'date': datetime.date(2020, 5, 18)},  # пн.
+                  {'date': datetime.date(2020, 5, 19)},  # вт.
+                  {'date': datetime.date(2020, 5, 20)},  # ср.
+                  {'date': datetime.date(2020, 5, 21)},  # чт.
+                  Training.objects.get(date=datetime.date(2020, 5, 22)),  # пт.
+                  {'date': datetime.date(2020, 5, 23)},  # сб.
+                  {'date': datetime.date(2020, 5, 24)},  # вс.
+                  ],
+                 [{'date': datetime.date(2020, 5, 25)},  # пн.
+                  Training.objects.get(date=datetime.date(2020, 5, 26)),  # вт.
+                  {'date': datetime.date(2020, 5, 27)},  # ср.
+                  {'date': datetime.date(2020, 5, 28)},  # чт.
+                  {'date': datetime.date(2020, 5, 29)},  # пт.
+                  {'date': datetime.date(2020, 5, 30)},  # сб.
+                  {'date': datetime.date(2020, 5, 31)},  # вс.
+                  ],
+             ]
+             },
+            {'name': court2,
+             'weeks': [
+                 [{'date': datetime.date(2020, 5, 18)},
+                  Training.objects.get(date=datetime.date(2020, 5, 19)),
+                  {'date': datetime.date(2020, 5, 20)},
+                  {'date': datetime.date(2020, 5, 21)},
+                  {'date': datetime.date(2020, 5, 22)},
+                  {'date': datetime.date(2020, 5, 23)},
+                  {'date': datetime.date(2020, 5, 24)},
+                  ],
+                 [{'date': datetime.date(2020, 5, 25)},
+                  {'date': datetime.date(2020, 5, 26)},
+                  {'date': datetime.date(2020, 5, 27)},
+                  {'date': datetime.date(2020, 5, 28)},
+                  Training.objects.get(date=datetime.date(2020, 5, 29)),
+                  {'date': datetime.date(2020, 5, 30)},
+                  Training.objects.get(date=datetime.date(2020, 5, 31)),
+                  ],
+             ]
+             }
+        ]
+        self.assertEqual(transform_for_timetable(query_set, start_date, 2),
+                         expected_result)
+
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_create_trainings_based_on_timeteble_for_x_days(self, 
+                                                            mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        court1 = Court.objects.create(passport_required=False, active=True)
+        timetable = Timetable.objects.create(
+                day_of_week=2,
+                skill_level=1,
+                start_time=datetime.time(18, 00, 00),
+                court=court1,
+        )
+        Training.objects.all().delete()
+        create_trainings_based_on_timeteble_for_x_days(timetable, Training, 15)
+        all_trainings = Training.objects.order_by('date').all()
+        self.assertEqual(all_trainings[0].date,
+                         datetime.date(2020, 10, 13))
+        self.assertEqual(all_trainings[1].date,
+                         datetime.date(2020, 10, 20))
+        self.assertEqual(all_trainings.count(), 2)
+
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_create_trainings_based_on_timeteble_for_x_days_from_monday_true(self, mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        court1 = Court.objects.create(passport_required=False, active=True)
+        timetable = Timetable.objects.create(
+            day_of_week=2,
+            skill_level=1,
+            start_time=datetime.time(18, 00, 00),
+            court=court1,
+        )
+        Training.objects.all().delete()
+        create_trainings_based_on_timeteble_for_x_days(
+            timetable, Training, days=21, from_monday=True)
+        all_trainings = Training.objects.order_by('date').all()
+        self.assertEqual(all_trainings[0].date,
+                         datetime.date(2020, 10, 6))
+        self.assertEqual(all_trainings[1].date,
+                         datetime.date(2020, 10, 13))
+        self.assertEqual(all_trainings[2].date,
+                         datetime.date(2020, 10, 20))
+        self.assertEqual(all_trainings.count(), 3)
+
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_create_trainings_based_on_timeteble_for_x_days_if_training_exist(self, mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        court1 = Court.objects.create(passport_required=False, active=True)
+        timetable = Timetable.objects.create(
+            day_of_week=2,
+            skill_level=1,
+            start_time=datetime.time(18, 00, 00),
+            court=court1,
+        )
+        Training.objects.all().delete()
+        Training.objects.create(
+            day_of_week=2,
+            skill_level=1,
+            date=datetime.datetime(2020, 10, 13),
+            start_time=datetime.time(18, 00, 00),
+            court=court1,
+        )
+        create_trainings_based_on_timeteble_for_x_days(timetable, Training, 15)
+        all_trainings = Training.objects.order_by('date').all()
+        self.assertEqual(all_trainings[0].date,
+                         datetime.date(2020, 10, 13))
+        self.assertEqual(all_trainings[1].date,
+                         datetime.date(2020, 10, 20))
+        self.assertEqual(all_trainings.count(), 2)
+
+    def test_cancel_registration_for_training_more_than_an_hour_before_start(self):
+        after_now_61_minutes = (
+            datetime.datetime.now() + datetime.timedelta(hours=1, minutes=1))
+        user1 = User.objects.create_user('test_user1')
+        user2 = User.objects.create_user('test_user2')
+        court1 = Court.objects.create(passport_required=False, active=True)
+        training = Training.objects.create(
+            day_of_week=1,
+            skill_level=2,
+            date=datetime.date(
+                after_now_61_minutes.year,
+                after_now_61_minutes.month,
+                after_now_61_minutes.day,
+            ),
+            start_time=datetime.time(
+                after_now_61_minutes.hour,
+                after_now_61_minutes.minute,
+                after_now_61_minutes.second,
+            ),
+            court=court1,
+        )
+        subscription = Subscription.objects.create(
+            user=user1, trainings_qty=2, validity=30)
+        training.learners.add(user1, user2)
+        subscription.trainings.add(training)
+        cancel_registration_for_training(
+            user1, training, price_for_one_training=900)
+        self.assertEqual(training.learners.count(), 1)
+        self.assertEqual(subscription.trainings.count(), 0)
+        self.assertIn(user2, training.learners.all())
+        cancel_registration_for_training(
+            user2, training, price_for_one_training=900)
+        self.assertEqual(training.learners.count(), 0)
+        self.assertEqual(user2.balance, 900)
+
+    def test_cancel_registration_for_training_less_than_an_hour_before_start(self):
+        after_now_59_minutes = (
+            datetime.datetime.now() + datetime.timedelta(minutes=59))
+        user1 = User.objects.create_user('test_user1')
+        court1 = Court.objects.create(passport_required=False, active=True)
+        training = Training.objects.create(
+            day_of_week=1,
+            skill_level=2,
+            date=datetime.date(
+                after_now_59_minutes.year,
+                after_now_59_minutes.month,
+                after_now_59_minutes.day,
+            ),
+            start_time=datetime.time(
+                after_now_59_minutes.hour,
+                after_now_59_minutes.minute,
+                after_now_59_minutes.second,
+            ),
+            court=court1,
+        )
+        training.learners.add(user1)
+        cancel_registration_for_training(
+            user1, training, price_for_one_training=850)
+        self.assertEqual(training.learners.count(), 1)
+        self.assertIn(user1, training.learners.all())
