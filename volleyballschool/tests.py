@@ -739,3 +739,146 @@ class UtilsTestCase(TestCase):
             user1, training, price_for_one_training=850)
         self.assertEqual(training.learners.count(), 1)
         self.assertIn(user1, training.learners.all())
+
+
+class TimetableTestCase(TestCase):
+    def setUp(self,):
+        # for the test use today date as datetime.date(2020, 10, 10)
+        self.court1 = Court.objects.create(passport_required=False, active=True)
+        self.timetable = Timetable.objects.create(
+            day_of_week=6,
+            skill_level=1,
+            court=self.court1,
+            start_time=datetime.time(18, 00, 00),
+            active=True,
+        )
+        Training.objects.all().delete()
+        self.training_past, self.training_1, self.training_2 = [
+            Training.objects.create(
+                day_of_week=6,
+                skill_level=1,
+                start_time=datetime.time(18, 00, 00),
+                date=datetime.date(2020, 10, day),
+                court=self.court1,
+            )
+            for day in (3, 10, 17)
+        ]
+        self.not_matching_training = Training.objects.create(
+                day_of_week=4,
+                skill_level=2,
+                start_time=datetime.time(17, 00, 00),
+                date=datetime.date(2020, 10, 15),
+                court=self.court1,
+            )
+
+    @mock.patch('volleyballschool.models.datetime', wraps=datetime)
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_save_if_has_matching_trainings(self, mocked_datetime, mock_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        mock_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        self.timetable.start_time = datetime.time(20, 00, 00)
+        self.timetable.skill_level = 3
+        self.timetable.save()
+        all_trainings = Training.objects.all()
+        training_past = all_trainings.get(pk=self.training_past.pk)
+        training_1 = all_trainings.get(pk=self.training_1.pk)
+        training_2 = all_trainings.filter(pk=self.training_2.pk).first()
+        not_matching_training = all_trainings.get(
+            pk=self.not_matching_training.pk)
+        self.assertEqual(training_past.skill_level, 1)
+        self.assertEqual(training_past.start_time, datetime.time(18, 00, 00))
+        self.assertEqual(training_1.start_time, datetime.time(20, 00, 00))
+        self.assertEqual(training_1.skill_level, 3)
+        self.assertEqual(not_matching_training.start_time,
+                         datetime.time(17, 00, 00))
+        self.assertEqual(not_matching_training.skill_level, 2)
+        if training_2:
+            self.assertEqual(training_2.start_time, datetime.time(20, 00, 00))
+            self.assertEqual(training_2.skill_level, 3)
+
+    @mock.patch('volleyballschool.models.datetime', wraps=datetime)
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_save_timetable_has_no_matching_trainings(self, mocked_datetime, mock_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        mock_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        Training.objects.filter(
+            day_of_week=6,
+            skill_level=1,
+            court=self.court1,
+        ).all().delete()
+        self.timetable.save()
+        self.assertIsNotNone(Training.objects.filter(
+            skill_level=1, day_of_week=6, court=self.court1).first())
+        self.assertEqual(
+            Training.objects.get(pk=self.not_matching_training.pk).skill_level,
+            2
+        )
+
+    @mock.patch('volleyballschool.models.datetime', wraps=datetime)
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_save_timetable_has_no_matching_trainings_and_changed(self, mocked_datetime, mock_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        mock_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        Training.objects.filter(
+            day_of_week=6,
+            skill_level=1,
+            court=self.court1,
+        ).all().delete()
+        self.timetable.start_time = datetime.time(20, 00, 00)
+        self.timetable.skill_level = 3
+        self.timetable.save()
+        matching_training = Training.objects.filter(
+            day_of_week=6,
+            skill_level=3,
+            court=self.court1,
+            start_time=datetime.time(20, 00, 00)
+        ).first()
+        self.assertIsNotNone(matching_training)
+        self.assertEqual(
+            Training.objects.get(pk=self.not_matching_training.pk).skill_level,
+            2
+        )
+
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_save_if_timetable_not_exist(self, mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        Timetable.objects.create(
+            day_of_week=5,
+            skill_level=3,
+            court=self.court1,
+            start_time=datetime.time(16, 00, 00),
+            active=True,
+        )
+        self.assertIsNotNone(Training.objects.filter(
+            skill_level=3, day_of_week=5, court=self.court1).first())
+        all_trainings = Training.objects.all()
+        training_past = all_trainings.get(pk=self.training_past.pk)
+        training_1 = all_trainings.get(pk=self.training_1.pk)
+        self.assertEqual(training_past.skill_level, 1)
+        self.assertEqual(training_past.start_time, datetime.time(18, 00, 00))
+        self.assertEqual(training_1.start_time, datetime.time(18, 00, 00))
+        self.assertEqual(training_1.skill_level, 1)
+
+    @mock.patch('volleyballschool.models.datetime', wraps=datetime)
+    def test_delete(self, mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 10, 10)
+        pk = self.timetable.pk
+        self.timetable.delete()
+        all_trainings = Training.objects.all()
+        self.assertIsNone(Timetable.objects.filter(pk=pk).first())
+        self.assertEqual(all_trainings.count(), 2)
+        self.assertIn(self.training_past, all_trainings)
+        self.assertIn(self.not_matching_training, all_trainings)
+
+    def test_create_upcoming_trainings_if_not_active(self):
+        self.timetable.active = False
+        self.timetable.save()
+        Training.objects.all().delete()
+        self.timetable.create_upcoming_trainings()
+        self.assertEqual(Training.objects.all().count(), 0)
+
+    def test_create_upcoming_trainings_if_active(self):
+        Training.objects.all().delete()
+        self.assertEqual(Training.objects.all().count(), 0)
+        self.timetable.create_upcoming_trainings()
+        self.assertGreater(Training.objects.all().count(), 0)

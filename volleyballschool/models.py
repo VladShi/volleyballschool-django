@@ -410,25 +410,20 @@ class Timetable(TimetableSample):
 
     def save(self, *args, **kwargs):
         if self.id:  # если расписание уже создано ранее
+            self_before_saving = Timetable.objects.get(pk=self.pk)
             matching_trainings = Training.objects.filter(
                 date__gte=datetime.date.today(),
-                skill_level=self.skill_level,
-                court=self.court,
-                day_of_week=self.day_of_week,
+                skill_level=self_before_saving.skill_level,
+                court=self_before_saving.court,
+                day_of_week=self_before_saving.day_of_week,
                 status=1,
             )
-            if self.active is True and matching_trainings:
+            if matching_trainings:
                 for training in matching_trainings:
                     copy_same_fields(self, training)
                     training.save()  # копируем поля на случай если изменились
-                super().save(*args, **kwargs)
-            elif matching_trainings:
-                matching_trainings.update(active=False)
-                super().save(*args, **kwargs)
-            self.create_upcoming_trainings()
-        else:
-            super().save(*args, **kwargs)
-            self.create_upcoming_trainings()
+        super().save(*args, **kwargs)
+        self.create_upcoming_trainings()
 
     def delete(self, *args, **kwargs):
         matching_trainings = Training.objects.filter(
@@ -439,9 +434,7 @@ class Timetable(TimetableSample):
             )
         if matching_trainings:
             matching_trainings.delete()
-            super().delete(*args, **kwargs)
-        else:
-            super().delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def create_upcoming_trainings(self, from_monday=False):
         if self.active is True:
