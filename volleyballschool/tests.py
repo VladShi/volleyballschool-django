@@ -3,8 +3,10 @@ from unittest import mock
 
 from django.http.response import Http404
 from django.test import TestCase
+from django.urls import NoReverseMatch, reverse
 
-from .models import (Court, OneTimeTraining, Subscription, Timetable, Training,
+from .models import (Article, Coach, Court, News, OneTimeTraining,
+                     Subscription, SubscriptionSample, Timetable, Training,
                      User)
 from .utils import (_date_of_the_current_week_monday,
                     cancel_registration_for_training, copy_same_fields,
@@ -12,7 +14,7 @@ from .utils import (_date_of_the_current_week_monday,
                     get_start_date_and_end_date, transform_for_timetable)
 
 
-class UserModelGetFirstActiveSubscriptionTestCase(TestCase):
+class UserModelGetFirstActiveSubscriptionTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up data for the whole TestCase
@@ -122,7 +124,7 @@ class UserModelGetFirstActiveSubscriptionTestCase(TestCase):
         )
 
 
-class SubscriptionModelTestCase(TestCase):
+class SubscriptionModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up data for the whole TestCase
@@ -313,7 +315,7 @@ class SubscriptionModelTestCase(TestCase):
 
     def test_is_active_trainings_count_equal_to_trainings_qty_and_possibility_of_canceling_last_training_over(self):
         second_before_now = (
-            datetime.datetime.now() - datetime.timedelta(seconds=1))
+            datetime.datetime.now() - datetime.timedelta(seconds=3))
         start_datetime = second_before_now + datetime.timedelta(hours=1)
         date = datetime.date(
             year=start_datetime.year,
@@ -342,7 +344,7 @@ class SubscriptionModelTestCase(TestCase):
 
     def test_is_active_trainings_count_equal_to_trainings_qty_and_possibility_of_canceling_last_training_not_over(self):
         second_after_now = (
-            datetime.datetime.now() + datetime.timedelta(seconds=1))
+            datetime.datetime.now() + datetime.timedelta(seconds=3))
         start_datetime = second_after_now + datetime.timedelta(hours=1)
         date = datetime.date(
             year=start_datetime.year,
@@ -383,7 +385,7 @@ class SubscriptionModelTestCase(TestCase):
         self.assertIs(self.sub.active, True)
 
 
-class OneTimeTrainingTestCase(TestCase):
+class OneTimeTrainingTests(TestCase):
     def test_save_inability_to_save_more_than_one_record(self):
         record1 = OneTimeTraining.objects.create(price=1)
         record2 = OneTimeTraining.objects.create(price=2)
@@ -393,7 +395,7 @@ class OneTimeTrainingTestCase(TestCase):
         self.assertEqual(OneTimeTraining.objects.all().count(), 1)
 
 
-class TrainingTestCase(TestCase):
+class TrainingTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up data for the whole TestCase
@@ -507,7 +509,7 @@ class TrainingTestCase(TestCase):
             Training.get_upcoming_training_or_404(pk=pk)
 
 
-class UtilsTestCase(TestCase):
+class UtilsTests(TestCase):
     def test_copy_same_fields(self):
         court1 = Court.objects.create(passport_required=False, active=True)
         court2 = Court.objects.create(passport_required=False, active=True)
@@ -553,7 +555,7 @@ class UtilsTestCase(TestCase):
             name='Корт1', passport_required=False, active=True)
         court2 = Court.objects.create(
             name='Корт2', passport_required=False, active=True)
-        for i, j in ((2, 19), (4, 22), (2, 26), (4, 29), (7, 31)):
+        for i, j in ((5, 15), (2, 19), (4, 22), (2, 26), (4, 29), (7, 31)):
             c = court1
             if j % 2 != 0:
                 c = court2
@@ -741,7 +743,7 @@ class UtilsTestCase(TestCase):
         self.assertIn(user1, training.learners.all())
 
 
-class TimetableTestCase(TestCase):
+class TimetableTests(TestCase):
     def setUp(self,):
         # for the test use today date as datetime.date(2020, 10, 10)
         self.court1 = Court.objects.create(passport_required=False, active=True)
@@ -882,3 +884,489 @@ class TimetableTestCase(TestCase):
         self.assertEqual(Training.objects.all().count(), 0)
         self.timetable.create_upcoming_trainings()
         self.assertGreater(Training.objects.all().count(), 0)
+
+
+class TimetableViewTests(TestCase):
+    def test_skill_level_1_to_3(self):
+        skill_levels_list = [
+            'для начального уровня',
+            'для уровня начальный+',
+            'для среднего уровня'
+        ]
+        for i, level_name in enumerate(skill_levels_list, start=1):
+            response = self.client.get(reverse('timetable', args=[i]))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context['skill_level'], level_name)
+
+    def test_skill_level_wrong(self):
+        with self.assertRaises(NoReverseMatch):
+            self.client.get(reverse('timetable', args=[20]))
+
+    def test_queryset_if_no_trainings(self):
+        response = self.client.get(reverse('timetable', args=[2]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['trainings'], [])
+
+    @mock.patch('volleyballschool.utils.datetime', wraps=datetime)
+    def test_queryset_if_trainings(self, mocked_datetime):
+        mocked_datetime.date.today.return_value = datetime.date(2020, 5, 20)
+        court1 = Court.objects.create(passport_required=False, active=True)
+        for i, j in ((5, 15), (2, 19), (4, 22), (2, 26), (4, 29), (7, 31)):
+            Training.objects.create(
+                day_of_week=i,
+                skill_level=1,
+                start_time=datetime.time(18, 00, 00),
+                date=datetime.date(2020, 5, j),
+                court=court1,
+            )
+        Training.objects.create(
+                day_of_week=4,
+                skill_level=2,
+                start_time=datetime.time(18, 00, 00),
+                date=datetime.date(2020, 5, 21),
+                court=court1,
+            )
+        expected_result = [  # FOR number_of_weeks = 2 in TimetableView !!!
+            {'name': court1,
+             'weeks': [
+                 [{'date': datetime.date(2020, 5, 18)},  # пн.
+                  Training.objects.get(date=datetime.date(2020, 5, 19)),  # вт.
+                  {'date': datetime.date(2020, 5, 20)},  # ср.
+                  {'date': datetime.date(2020, 5, 21)},  # чт.
+                  Training.objects.get(date=datetime.date(2020, 5, 22)),  # пт.
+                  {'date': datetime.date(2020, 5, 23)},  # сб.
+                  {'date': datetime.date(2020, 5, 24)},  # вс.
+                  ],
+                 [{'date': datetime.date(2020, 5, 25)},  # пн.
+                  Training.objects.get(date=datetime.date(2020, 5, 26)),  # вт.
+                  {'date': datetime.date(2020, 5, 27)},  # ср.
+                  {'date': datetime.date(2020, 5, 28)},  # чт.
+                  Training.objects.get(date=datetime.date(2020, 5, 29)),  # пт.
+                  {'date': datetime.date(2020, 5, 30)},  # сб.
+                  Training.objects.get(date=datetime.date(2020, 5, 31)),  # вс.
+                  ],
+             ]
+             },
+        ]
+        response = self.client.get(reverse('timetable', args=[1]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['trainings'], expected_result)
+
+
+class BuyingASubscriptionViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up data for the whole TestCase
+        cls.subscription_sample = SubscriptionSample.objects.create(
+            name='Абонемент на 4 занятия',
+            amount=900,
+            trainings_qty=4,
+            validity=30,
+            active=True
+        )
+        cls.url = reverse('buying-a-subscription',
+                          args=[cls.subscription_sample.pk])
+        cls.user = User.objects.create_user(username='test_user', balance=900)
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_not_logged_in_user(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('login') + f"?next={self.url}")
+
+    def test_subscription_sample_not_exist(self):
+        response = self.client.get(reverse('buying-a-subscription', args=[55]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_subscription_sample_exist(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_buying_subscription(self):
+        response = self.client.post(self.url, {'confirm': True})
+        self.user = User.objects.get(pk=self.user.pk)
+        self.assertEqual(self.user.balance, 0)
+        self.assertEqual(self.user.subscriptions.count(), 1)
+        self.assertTrue(self.client.session['submitted'])
+        subscription = self.user.subscriptions.last()
+        success_url = reverse('success-buying-a-subscription',
+                              args=[subscription.id])
+        self.assertRedirects(response, success_url)
+        self.assertEqual(self.subscription_sample.trainings_qty,
+                         subscription.trainings_qty)
+        self.assertEqual(self.subscription_sample.validity,
+                         subscription.validity)
+
+    def test_buying_subscription_if_user_has_no_enough_money(self):
+        self.user.balance = 899
+        self.user.save(update_fields=['balance'])
+        response = self.client.post(self.url, {'confirm': True})
+        self.user = User.objects.get(pk=self.user.pk)
+        self.assertEqual(self.user.balance, 899)
+        self.assertEqual(self.user.subscriptions.count(), 0)
+        self.assertNotIn('submitted', self.client.session)
+        self.assertRedirects(response, self.url)
+
+
+class SuccessBuyingASubscriptionViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up data for the whole TestCase
+        cls.user = User.objects.create_user(username='test_user')
+        cls.subscription = Subscription.objects.create(
+            active=True, user=cls.user, trainings_qty=2, validity=30)
+        cls.url = reverse('success-buying-a-subscription',
+                          args=[cls.subscription.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_not_logged_in_user(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('login') + f"?next={self.url}")
+
+    def test_if_session_has_no_submitted_true(self):
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('prices'))
+
+    def test_if_session_has_submitted_true_and_subscription_not_exist(self):
+        session = self.client.session
+        session['submitted'] = True
+        session.save()
+        self.assertTrue(self.client.session['submitted'])
+        response = self.client.get(
+            reverse('success-buying-a-subscription', args=[55])
+        )
+        self.assertNotIn('submitted', self.client.session)
+        self.assertEqual(response.status_code, 404)
+
+    def test_session_has_submitted_true_but_subscription_owner_isnt_current_user(self):
+        user2 = User.objects.create_user(username='test_user2')
+        self.client.force_login(user2)
+        session = self.client.session
+        session['submitted'] = True
+        session.save()
+        self.assertTrue(self.client.session['submitted'])
+        response = self.client.get(self.url)
+        self.assertNotIn('submitted', self.client.session)
+        self.assertRedirects(response, reverse('prices'))
+
+    def test_session_has_submitted_true_and_subscription_exist(self):
+        session = self.client.session
+        session['submitted'] = True
+        session.save()
+        self.assertTrue(self.client.session['submitted'])
+        response = self.client.get(self.url)
+        self.assertNotIn('submitted', self.client.session)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['subscription'], self.subscription)
+
+
+class RegistrationForTrainingViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up data for the whole TestCase
+        cls.court1 = Court.objects.create(passport_required=False, active=True)
+        cls.price_for_one_training = OneTimeTraining.objects.create(price=900)
+
+    def setUp(self):
+        self.upcoming_training = Training.objects.create(
+            day_of_week=1,
+            skill_level=1,
+            date=datetime.date.today()+datetime.timedelta(days=2),
+            start_time=datetime.time(18, 00, 00),
+            court=self.court1,
+        )
+        self.user = User.objects.create_user(username='test_user', balance=900)
+        self.url = reverse('registration-for-training',
+                           args=[self.upcoming_training.pk])
+        self.client.force_login(self.user)
+
+    def test_not_logged_in_user(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('login') + f"?next={self.url}")
+
+    def test_training_not_exist(self):
+        response = self.client.get(reverse('registration-for-training',
+                                           args=[1030]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_training_passed(self):
+        past_training = Training.objects.create(
+            day_of_week=1,
+            skill_level=1,
+            date=datetime.date.today()-datetime.timedelta(days=2),
+            start_time=datetime.time(18, 00, 00),
+            court=self.court1,
+        )
+        response = self.client.get(reverse('registration-for-training',
+                                           args=[past_training.pk]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_context(self):
+        subscription = Subscription.objects.create(
+            active=True, user=self.user, trainings_qty=2, validity=30)
+        response = self.client.get(self.url)
+        self.assertNotIn('already_registered', response.context)
+        self.assertEqual(response.context['subscription_of_user'],
+                         subscription)
+        self.assertEqual(response.context['price_for_one_training'],
+                         self.price_for_one_training.price)
+        self.assertEqual(response.status_code, 200)
+
+    def test_context_if_user_already_registered_to_training(self):
+        self.upcoming_training.learners.add(self.user)
+        response = self.client.get(self.url)
+        self.assertTrue(response.context['already_registered'])
+        self.assertEqual(response.status_code, 200)
+
+    def test_register_for_training_by_subscription(self):
+        subscription = Subscription.objects.create(
+            active=True, user=self.user, trainings_qty=2, validity=30)
+        response = self.client.post(
+            self.url, {'confirm': True, 'payment_by': 'subscription'})
+        self.assertIn(self.user, self.upcoming_training.learners.all())
+        self.assertIn(self.upcoming_training, subscription.trainings.all())
+        self.assertRedirects(response, self.url)
+
+    def test_register_for_training_by_user_balance(self):
+        response = self.client.post(
+            self.url, {'confirm': True, 'payment_by': 'balance'})
+        self.user = User.objects.get(pk=self.user.pk)
+        self.assertIn(self.user, self.upcoming_training.learners.all())
+        self.assertEqual(self.user.balance, 0)
+        self.assertRedirects(response, self.url)
+
+    def test_cancel_registration_for_training(self):
+        self.upcoming_training.learners.add(self.user)
+        response = self.client.post(self.url, {'cancel': True})
+        self.user = User.objects.get(pk=self.user.pk)
+        self.assertNotIn(self.user, self.upcoming_training.learners.all())
+        self.assertEqual(self.user.balance, 1800)
+        self.assertRedirects(response, self.url)
+
+
+class AccountViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up data for the whole TestCase
+        cls.court1 = Court.objects.create(passport_required=False, active=True)
+        cls.price_for_one_training = OneTimeTraining.objects.create(price=900)
+        cls.upcoming_training = Training.objects.create(
+            day_of_week=1,
+            skill_level=1,
+            date=datetime.date.today()+datetime.timedelta(days=2),
+            start_time=datetime.time(18, 00, 00),
+            court=cls.court1,
+        )
+        cls.user = User.objects.create_user(username='test_user', balance=900)
+        cls.subscription = Subscription.objects.create(
+            active=True, user=cls.user, trainings_qty=2, validity=30)
+        cls.not_active_sub = Subscription.objects.create(
+            active=False, user=cls.user, trainings_qty=2, validity=30)
+        cls.not_active_sub_2 = Subscription.objects.create(
+            active=False, user=cls.user, trainings_qty=2, validity=30)
+        cls.url = reverse('account')
+        cls.not_active_sub.purchase_date = (
+            datetime.date.today() - datetime.timedelta(days=41))
+        cls.not_active_sub_2.purchase_date = (
+            datetime.date.today() - datetime.timedelta(days=85))
+        Subscription.objects.bulk_update(
+            [cls.not_active_sub, cls.not_active_sub_2], ['purchase_date'])
+        cls.upcoming_training.learners.add(cls.user)
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_not_logged_in_user(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertRedirects(response, reverse('login') + f"?next={self.url}")
+
+    def test_context(self):
+        response = self.client.get(self.url)
+        self.assertIn(self.upcoming_training,
+                      response.context['user_upcoming_trainings'])
+        self.assertEqual(response.context['user_upcoming_trainings'].count(),
+                         1)
+        self.assertEqual(response.context['user_active_subscriptions'],
+                         [self.subscription])
+        self.assertEqual(response.context['last_not_active_subscription'],
+                         self.not_active_sub)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cancel_registration_for_training(self):
+        response = self.client.post(
+            self.url, {'cancel': True, 'pk': self.upcoming_training.pk})
+        self.user = User.objects.get(pk=self.user.pk)
+        self.assertNotIn(self.user, self.upcoming_training.learners.all())
+        self.assertEqual(self.user.balance, 1800)
+        self.assertRedirects(response, self.url)
+        self.upcoming_training.learners.add(self.user)
+        User.objects.filter(pk=self.user.pk).update(balance=900)
+
+
+class IndexViewTests(TestCase):
+    def test_context(self):
+        News.objects.bulk_create(
+            [News(title='Новость{}'.format(i)) for i in range(4)])
+        response = self.client.get(reverse('index_page'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['latest_news_list'].count(), 3)
+
+
+class LevelsViewTests(TestCase):
+    def test_template_used(self):
+        response = self.client.get(reverse('levels'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'volleyballschool/levels.html')
+
+
+class NewsViewTests(TestCase):
+    def test_pagination(self):
+        News.objects.bulk_create(
+            [News(title='Новость{}'.format(i)) for i in range(5)])
+        response = self.client.get(reverse('news'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['news_list'].count(), 4)
+        response = self.client.get(reverse('news')+'?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['news_list'].count(), 1)
+
+
+class CoachesViewTests(TestCase):
+    def test_context(self):
+        coach1 = Coach.objects.create(name='Тренер1', active=True)
+        Coach.objects.create(name='Тренер2', active=False)
+        coach3 = Coach.objects.create(name='Тренер3', active=True)
+        response = self.client.get(reverse('coaches'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(coach1, response.context['coaches_list'])
+        self.assertIn(coach3, response.context['coaches_list'])
+        self.assertEqual(response.context['coaches_list'].count(), 2)
+
+
+class PricesViewTests(TestCase):
+    def test_context(self):
+        one_time_training = OneTimeTraining.objects.create(price=900)
+        SubscriptionSample.objects.create(
+            name='Абонемент1',
+            amount=3000,
+            trainings_qty=2,
+            validity=30,
+            active=False
+        )
+        sub_sample2 = SubscriptionSample.objects.create(
+            name='Абонемент2',
+            amount=3000,
+            trainings_qty=2,
+            validity=30,
+            active=True
+        )
+        response = self.client.get(reverse('prices'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(sub_sample2, response.context['subscription_samples'])
+        self.assertEqual(response.context['subscription_samples'].count(), 1)
+        self.assertEqual(one_time_training,
+                         response.context['one_time_training'])
+
+
+class CourtsViewTests(TestCase):
+    def test_context(self):
+        Court.objects.create(
+            name='Зал1',
+            metro='Станция1',
+            passport_required=False,
+            active=False,
+        )
+        court2 = Court.objects.create(
+            name='Зал2',
+            metro='Станция2',
+            passport_required=False,
+            active=True,
+        )
+        response = self.client.get(reverse('courts'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(court2.metro, response.context['courts_metro_list'])
+        self.assertEqual(response.context['courts_metro_list'].count(), 1)
+
+
+class ArticlesViewTests(TestCase):
+    def test_pagination(self):
+        not_active_article = Article.objects.create(
+            active=False, slug='NA', title='NA')
+        Article.objects.bulk_create([
+            Article(
+                active=True,
+                slug='article{}'.format(i),
+                title='Статья{}'.format(i),
+            ) for i in range(6)
+        ])
+        response = self.client.get(reverse('articles'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['articles_list'].count(), 5)
+        self.assertNotIn(not_active_article, response.context['articles_list'])
+        response = self.client.get(reverse('articles')+'?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['articles_list'].count(), 1)
+        self.assertNotIn(not_active_article, response.context['articles_list'])
+
+
+class ArticleDetailViewTests(TestCase):
+    def test_template_used(self):
+        article = Article.objects.create(
+            active=True, slug='slug', title='test')
+        response = self.client.get(reverse('article-detail', args=['slug']))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['article'], article)
+        self.assertTemplateUsed(response,
+                                'volleyballschool/article_detail.html')
+
+    def test_article_does_not_exist(self):
+        response = self.client.get(reverse('article-detail', args=['any']))
+        self.assertEqual(response.status_code, 404)
+
+    def test_article_is_not_active(self):
+        Article.objects.create(
+            active=False, slug='slug', title='test')
+        response = self.client.get(reverse('article-detail', args=['slug']))
+        self.assertEqual(response.status_code, 404)
+
+
+class RegisterUserViewTests(TestCase):
+    def test_logged_in_user(self):
+        user = User.objects.create_user(username='test_user')
+        self.client.force_login(user)
+        response = self.client.get(reverse('register'))
+        self.assertRedirects(response, reverse('account'))
+
+    def test_template_used(self):
+        response = self.client.get(reverse('register'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'volleyballschool/register.html')
+
+    def test_register_user_form(self):
+        response = self.client.post(reverse('register'))
+        self.assertFormError(
+            response, 'form', 'username', 'Обязательное поле.')
+        self.assertFormError(
+            response, 'form', 'first_name', 'Обязательное поле.')
+        self.assertFormError(
+            response, 'form', 'patronymic', 'Обязательное поле.')
+
+
+class ReplenishmentViewTests(TestCase):
+    def test_not_logged_in_user(self):
+        response = self.client.get(reverse('replenishment'))
+        self.assertRedirects(
+            response, reverse('login') + f"?next={reverse('replenishment')}")
+
+    def test_logged_in_user(self):
+        user = User.objects.create_user(username='test_user')
+        self.client.force_login(user)
+        response = self.client.get(reverse('replenishment'))
+        self.assertEqual(response.status_code, 200)

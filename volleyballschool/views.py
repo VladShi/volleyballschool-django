@@ -75,7 +75,7 @@ class ArticlesView(ListView):
 
 class ArticleDetailView(DetailView):
 
-    model = Article
+    queryset = Article.objects.filter(active=True)
     context_object_name = 'article'
 
 
@@ -129,7 +129,7 @@ class BuyingASubscriptionView(LoginRequiredMixin, DetailView):
     def post(self, request, *args, **kwargs):
         if request.POST.get('confirm', False):
             subscription_sample = self.get_object()
-            if request.user.balance > subscription_sample.amount:
+            if request.user.balance >= subscription_sample.amount:
                 subscription = Subscription()
                 copy_same_fields(subscription_sample, subscription)
                 subscription.user = request.user
@@ -150,14 +150,15 @@ class SuccessBuyingASubscriptionView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         if request.session.get('submitted', False):
+            request.session.pop('submitted', None)
             subscription = get_object_or_404(
                 Subscription.objects.select_related('user'),
                 pk=self.kwargs['pk'],
             )
-            request.session.pop('submitted', None)
-            return render(
-                request, self.template_name, {'subscription': subscription}
-            )
+            if subscription.user == request.user:
+                return render(
+                    request, self.template_name, {'subscription': subscription}
+                )
         return redirect('prices')
 
 
@@ -187,7 +188,8 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
     def post(self, request, *args, **kwargs):
         user = request.user
         training = Training.get_upcoming_training_or_404(self.kwargs['pk'])
-        if request.POST.get('confirm', False):
+        if (request.POST.get('confirm', False)
+                and user not in training.learners.all()):
             # запись на тренировку
             if training.get_free_places() > 0:
                 if request.POST.get('payment_by', False) == 'subscription':
@@ -199,11 +201,11 @@ class RegistrationForTrainingView(LoginRequiredMixin, DetailView):
                     if subscription_of_user:
                         training.learners.add(user)
                         subscription_of_user.trainings.add(training)
-                if request.POST.get('payment_by', False) == 'balance':
+                elif request.POST.get('payment_by', False) == 'balance':
                     price_for_one_training = (
                         OneTimeTraining.objects.first().price
                     )
-                    if user.balance > price_for_one_training:
+                    if user.balance >= price_for_one_training:
                         training.learners.add(user)
                         user.balance -= price_for_one_training
                         user.save(update_fields=['balance'])
@@ -264,6 +266,11 @@ class RegisterUserView(CreateView):
     form_class = RegisterUserForm
     template_name = "volleyballschool/register.html"
     success_url = reverse_lazy('account')
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse_lazy('account'))
+        return super().get(request, *args, **kwargs)
 
 
 class ReplenishmentView(LoginRequiredMixin, TemplateView):
