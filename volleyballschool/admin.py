@@ -142,6 +142,7 @@ class TimetableAdmin(admin.ModelAdmin):
     list_filter = ('court', 'skill_level', 'day_of_week', 'coach')
     ordering = ['court', 'skill_level']
     radio_fields = {'skill_level': admin.VERTICAL}
+    list_select_related = ('court', 'coach')
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
